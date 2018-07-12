@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/sunbaiwan9527/projects/findcircle/build",
+  "command": "/usr/bin/c++    -isystem /usr/local/include -isystem /usr/local/include/opencv  -std=c++11 -g   -o CMakeFiles/findcircle.dir/main.cpp.o -c /home/sunbaiwan9527/projects/findcircle/main.cpp",
+  "file": "/home/sunbaiwan9527/projects/findcircle/main.cpp"
+}
+]
