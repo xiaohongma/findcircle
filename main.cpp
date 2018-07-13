@@ -150,18 +150,6 @@ int main(int argc, char **argv) {
 
 
     cout <<"count_segmentation" << count_segmentation<<endl;
-    //imshowResize("visit", visited);
-
-
-    //cout << "test" <<test << endl;
-    // for( int i = 0; i< samples.size();i++){
-
-
-    // circle(distImg,samples[i], 5,Scalar(155,50,255),-1,4,0);
-//  circle(distImg,samples[i], mean_radius,Scalar(0,255,0),1,4,0);
-
-    //}
-    //sub_rect.
 
 
 
