@@ -41,3 +41,6 @@ Project Target=findcircle,findcircle
 Use External Terminal=false
 Working Directory=
 isExecutable=false
+
+[Project]
+VersionControlSupport=kdevgit

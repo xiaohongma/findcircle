@@ -1,10 +1,36 @@
-#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
 #IncludeRegexComplain: ^$
 
 #IncludeRegexTransform: 
+
+/home/sunbaiwan9527/projects/findcircle/bfs.cpp
+bfs.h
+/home/sunbaiwan9527/projects/findcircle/bfs.h
+utils.h
+/home/sunbaiwan9527/projects/findcircle/utils.h
+iostream
+-
+
+/home/sunbaiwan9527/projects/findcircle/bfs.h
+opencv2/imgproc/imgproc.hpp
+-
+queue
+-
+
+/home/sunbaiwan9527/projects/findcircle/dfs.cpp
+dfs.h
+/home/sunbaiwan9527/projects/findcircle/dfs.h
+
+/home/sunbaiwan9527/projects/findcircle/dfs.h
+vector
+-
+opencv2/imgproc/imgproc.hpp
+-
+utils.h
+/home/sunbaiwan9527/projects/findcircle/utils.h
 
 /home/sunbaiwan9527/projects/findcircle/main.cpp
 iostream
@@ -14,6 +40,26 @@ string
 opencv2/opencv.hpp
 -
 opencv2/imgproc/imgproc.hpp
+-
+numeric
+-
+dfs.h
+/home/sunbaiwan9527/projects/findcircle/dfs.h
+utils.h
+/home/sunbaiwan9527/projects/findcircle/utils.h
+bfs.h
+/home/sunbaiwan9527/projects/findcircle/bfs.h
+
+/home/sunbaiwan9527/projects/findcircle/utils.cpp
+utils.h
+/home/sunbaiwan9527/projects/findcircle/utils.h
+numeric
+-
+
+/home/sunbaiwan9527/projects/findcircle/utils.h
+opencv2/imgproc/imgproc.hpp
+-
+opencv2/opencv.hpp
 -
 
 /usr/local/include/opencv/cxcore.h

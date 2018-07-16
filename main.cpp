@@ -4,19 +4,13 @@
 #include <opencv2/imgproc/imgproc.hpp>
 //#include <boost/mpl/accumulate.hpp>
 #include <numeric>
+#include "dfs.h"
+#include "utils.h"
+#include "bfs.h"
 using namespace cv;
 using namespace std;
 #define WINDOWNAME "original  image"
-/**
- This function is used to get the sign(+,-) of input value
- @param x is a double value, if x is negative ,return -1; if positive return 1
- */
-double sng(double x);
-/**
- @param winname and img same with the function imshow(). This function will show image in 700*700 size.
- you can also change the value according to your display, or replace it with an auto resize method.
- */
-void imshowResize(const String& winname, Mat& img);
+
 /**
  * we can use this method slelect roi by hand, draging out a rectangle in the image.It is a MouseCallback function
  */
@@ -25,54 +19,7 @@ void selectROI(int event, int x, int y, int flags, void* img);
  save ROI as a Mat type image, and write into build dictonary
  */
 void saveROI(Mat& img, Rect rect);
-/**
-  @param centers is the detected circle centers
-  @param mean_object_dist return the mean distance of two neighbor circles
-  @param angle return the angle of minarea adjusting rect
- */
-void estimateCenterDistance(vector< Point > centers,double* mean_object_dist, double* angle);
 
-/**
-@param direction[] is the search direction for next rectangle
-@param visited is a (U8C1) map record visiting status of every center point. At start, all of the 
-center points are setted to 0, if it is visited, we set it to 255. When all of the center points 
-are visited( setted to 255),we think we have found segmantion road.
-@param centers is the detected point center
-@param radius the mean radius
-@param mean_dist is the mean dist of neighbor circle centers
-@param img is roi image
-*/
-void dfs(int direction[8][2], Mat& visited, vector< Point > centers, double radius, double mean_dist, Mat& img);
-/**
- * this function is used to check whether there are rectangles can be extented.
- @param visited is a map record the visiting status.
- @param centers is all circle centers
- @param direction is the search direction
- @param basePoint is the bottom left point of probably existing rectangle
- @param radius mean radius
- @param dist mean dist of two adjusting circle center
- @param img roi image, in case we need breakpoint or debug
- */
-bool extendAdjustRect(Mat& visited,vector<Point> centers,int direction[], Point basePoint, double radius,double dist, Mat& img);
-/**
- * this is used to set visited or unvisited of centers in the extended rectangle.
- @param visited visited map record visiting status, same size with  roi image
- @param blpoint bottom left point, same with the input in extendAdjustRect()
- @param radius, direction, dist, centers, img,same with params in extendAdjustRect()
- @param a uchar value(0 or 255) is to be written into center point
- */
-void setVisited(Mat& visited, Point blpoint, int direction[], uchar a, double radius, double dist, vector< Point > centers, Mat& img);
-/**
- this function used to determine when we have visited all circles. Only if all the circles are visited, can we return true;
- @param visited nothing to say.
- @param centers same with the above
- */
-bool isEnd(Mat& visited, vector< Point > centers);
-/**
- it is used to find the bottom left circles in every dfs
- */
-void findblcenter(Mat& visited, vector<Point> centers, Point* bl);
-//void random_select_n(vector<Point>* input, int n, vector<Point>* output);
 /**
  * this two methods are used to adaptive canny edge detection.
  */
@@ -85,7 +32,6 @@ double assume_radius = 21;
 double test_count = 24*9;
 int m =6;//x
 int n =4;//y
-int count_segmentation ;//cout >0 indicates that we have at least one route to segment roi   successfully
 bool g_bDrawingBox = false;
 Rect g_rectangle = Rect(-1,-1,0,0);
 
@@ -111,7 +57,7 @@ int main(int argc, char **argv) {
     double canny_thresroud = canny_high;
     Canny(tmpImg,edges, canny_thresroud, canny_thresroud/2);
     imshowResize("canny edge",edges);
-
+ 
     // hough circles, this can be optimized to reduce running time
     int acc_threshold = 30;// make the 2*n*n > count>= n*n
     vector<Vec3f> circles;
@@ -167,23 +113,20 @@ int main(int argc, char **argv) {
         //  circle(visited,p1, 5,Scalar(155,50,255),-1,4,0);
         //  circle(visited,p, 5,Scalar(155,50,255),-1,4,0);
     }
-    dfs(direction,visited,centers,mean_radius,mean_object_dist,distImg);
+    int count_segmentation =0;//cout >0 indicates that we have at least one route to segment roi   successfully
+   dfs(direction,visited,centers,mean_radius,mean_object_dist,distImg,&count_segmentation);
+    // bfs(direction,roi.size(),centers,mean_radius,mean_object_dist,distImg,&count_segmentation);
     cout <<"count_segmentation" << count_segmentation<<endl;
 
     //cv::rectangle(distImg,sub_rect,Scalar(255),1,8,0);
 
-    //imshowResize("first box",distImg);
+    imshowResize("first box",distImg);
     waitKey(0);
 
     return 0;
 }
 
-void imshowResize(const String& winname, Mat& img)
-{
-    namedWindow(winname, CV_WINDOW_NORMAL);
-    cvResizeWindow(winname.c_str(), 700,700);
-    imshow(winname, img);
-}
+
 
 void selectROI(int event, int x, int y, int flags, void* img)
 {
@@ -311,215 +254,7 @@ void _AdaptiveFindThreshold(CvMat *dx, CvMat *dy, double* low, double* high)
     cvReleaseHist(&hist);
 }
 
-void estimateCenterDistance(vector< Point > centers, double* mean_object_dist, double* angle)
-{
-    RotatedRect rect = minAreaRect(centers);
-    *angle = rect.angle;
-    //cout << "angle"<< rect.angle <<endl;
-    //取外接矩形四个定点处的n*n个圆，计算圆心距。
-    Point2f vertices[4];
-    rect.points(vertices);
-    //vector<double> dist1(centers.size());
-    //double min;
-    // int index;
-    Point2f corner_4[4];//距离外接矩形四个顶点最近的圆心
-    for (int i = 0; i < 4; i++) {
-        double  min_dist = 1000000;
-        int  index = 0;
-        double dist1 = 0;
-        for(int j = 0; j< centers.size(); j++) {
-            Point a = centers.at(j);
-            //cout << (a.x -vertices[i].x)*(a.x -vertices[i].x) +(a.y -vertices[i].y)*(a.y -vertices[i].y)<<endl;
-            dist1 = (a.x -vertices[i].x)*(a.x -vertices[i].x) +(a.y -vertices[i].y)*(a.y -vertices[i].y);
-            //dist[j] = (centers[j][0]-vertices[i][0])^2 +(centers[j][1]-vertices[i][1])^2;
-            if(dist1<min_dist) {
-                min_dist = dist1;
-                index = j;
-            }
-        }
-        corner_4[i] = centers[index];
-        //centers.clear();
-        // circle(img,corner_4[i], 5,Scalar(155,50,255),-1,4,0);
-        //line(img, vertices[i], vertices[(i+1)%4], Scalar(255));
-    }
 
-
-    vector<Point> selected_object(4);//角点附近的圆心
-    vector<double> object_dist(4); //圆心距离
-    //  double object_space[2];
-
-    for (int i = 0; i < 4; i++) {
-        double  min_dist = 1000000;
-        int  index = 0;
-        double dist1 = 0;
-        //int num = 2;
-        // while(1){
-        for(int j = 0; j< centers.size(); j++) {
-            Point a = centers.at(j);
-
-            dist1 = (a.x -corner_4[i].x)*(a.x -corner_4[i].x) +(a.y -corner_4[i].y)*(a.y -corner_4[i].y);
-            if(dist1 ==0) continue;
-
-            if(dist1<min_dist) {
-                min_dist = dist1;
-                index = j;
-            }
-        }
-        selected_object.at(i) = centers.at(index);
-        object_dist.at(i) = sqrt(min_dist);
-        // circle(img,selected_object[i], 5,Scalar(155,50,255),-1,4,0);
-        cout << object_dist.at(i)<< endl;
-
-    }
-
-    //圆心距
-    *mean_object_dist = accumulate(object_dist.begin(),object_dist.end(), 0.0)/object_dist.size();
-
-    //calculate the top right point of sub-box
-   // *bl = Point(corner_4[0].x, corner_4[0].y);
-
-
-}
-
-
-bool extendAdjustRect(Mat& visited,vector<Point> centers,int direction[], Point basePoint, double radius,double dist, Mat& img)
-{
-    Point tl(basePoint.x-1.25*radius*sng(direction[0]),basePoint.y+ direction[1]*dist+ 1.25*radius*sng(direction[1]));
-
-    Point br(basePoint.x+ direction[0]*dist+1.25*radius*sng(direction[0]), basePoint.y -1.25*radius*sng(direction[1]));
-
-    // circle(visited, tl,10,Scalar(0,255,0));
-    // circle(visited, br,10,Scalar(0,255,0));
-    // Point tr(basePoint.x-1.25*radius+size.height,basePoint.y+1.25*radius-size.height);
-    Rect rect = Rect(tl,br);
-    //  rectangle(visited, rect, Scalar(0,255,0));
-    Rect roi(Point(0,0),visited.size());
-    // if the next rect is going to extend the roi bouding, we will return the current point.
-
-    if((roi & rect)!= rect) {
-        //*nextblpoint = basePoint;
-        return false;
-
-    }
-    // the next rect contains less unvisited circle centers than m*n, we also return current point.
-    int count = 0;
-    for (int i = 0; i < centers.size(); i++) {
-        if(rect.contains(centers.at(i)) && visited.at<uchar>(centers.at(i))==0)
-            count++;
-    }
-    if(count < 24) {
-        //*nextblpoint = basePoint;
-        cout << count << endl;
-        return false;
-    }
-
-
-    return true;
-
-
-}
-void dfs(int direction[8][2], Mat& visited,vector<Point> centers, double radius, double mean_dist, Mat& img)
-{
-    // all of circle have been setted to flase
-    if (isEnd(visited,centers)) {
-        count_segmentation++;
-        return;
-    }
-    Point point;// bottom left point
-    findblcenter(visited,centers,&point);
-    //cout << centers.size()<<endl;
-
-    for (int i = 0; i<8; i++) {
-
-        // Rect rect;
-        // setVisited(visited,basePoint,direction);
-        //if have not visited
-        //如果周围可以有邻接矩形
-        if(extendAdjustRect(visited, centers,direction[i],point, radius,mean_dist,img)) {
-
-            setVisited(visited,point,direction[i],255,radius, mean_dist,centers,img);// set the m*n rect into flase
-            dfs(direction, visited,centers, radius, mean_dist,img);
-            setVisited(visited,point,direction[i],0,radius, mean_dist,centers,img);//back to set it to 0
-        }
-
-    }
-
-}
-void setVisited(Mat& visited, Point blpoint, int direction[],uchar a, double radius, double dist, vector<Point> centers, Mat& img)
-{
-
-    Point p1(blpoint.x-1.25*sng(direction[0])*radius, blpoint.y-1.25*radius*sng(direction[1]));
-    Point p2(p1.x, p1.y + direction[1]*dist+ 2.5*radius*sng(direction[1]));
-    Point p3(p1.x+direction[0]*dist+2.5*radius*sng(direction[0]), p1.y);
-// Point p4(p1.x+direction[0]*dist+ 2.5*radius*sng(direction[0]), p1.y + direction[1]*dist+ 2.5*radius*sng(direction[1]));
-
-    Rect rect(p2,p3);
-
-    for (int i = 0; i < centers.size(); i++) {
-        if(rect.contains(centers.at(i))) {
-            visited.at<uchar>(centers.at(i)) = a;
-
-            circle(img,centers.at(i), radius,Scalar(a,a,a),-1,8,0);
-            //LineTypes();
-
-        }
-    }
-
-
-    rectangle(img,rect,Scalar(255,0,0),1,16);
-    // circle(img,blpoint,10,Scalar(255,0,0),-1,16,0);
-    imshowResize("xx",img);
-    waitKey(0);
-}
-bool isEnd(Mat& visited, vector<Point> centers)
-{
-    // int count =0;
-    for( int i = 0; i < centers.size(); i ++ ) {
-        // int a = (int)visited.at<uchar>(centers.at(0));
-        if(visited.at<uchar>(centers.at(i))==255) {
-            //  count++;
-            continue;
-        }
-        return false;
-    }
-    //cout << "success " <<count<< endl;
-    return true;
-
-}
-
-double sng(double x) {
-    return (x <0)? -1 : (x> 0);
-}
-
-void findblcenter(Mat& visited, vector<Point> centers, Point* bl) {
-
-    vector<Point> remaining;
-    for (int i = 0; i < centers.size(); i++) {
-        if(visited.at<uchar>(centers.at(i))==0) {
-            remaining.push_back(centers.at(i));
-            //circle(img,centers.at(i),radius,Scalar(0,0,100),-1,4,0);
-        }
-    }
-    if(remaining.empty()) {
-        return;
-    }
-
-
-    int x_lb = 0;
-    int y_lb = visited.rows;
-    double distance = (remaining.at(0).x-x_lb)*(remaining.at(0).x-x_lb)+(remaining.at(0).y-y_lb)*(remaining.at(0).y-y_lb);
-    int index;
-    for(int i =1; i< remaining.size(); i++) {
-        double d2 = (remaining.at(i).x-x_lb)*(remaining.at(i).x-x_lb)+(remaining.at(i).y-y_lb)*(remaining.at(i).y-y_lb);
-        if(d2 < distance) {
-            distance = d2;
-            index = i;
-        }
-    }
-
-    *bl = remaining.at(index);
-
-}
 
 
 
