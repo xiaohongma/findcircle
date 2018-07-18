@@ -4,6 +4,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 //#include <boost/mpl/accumulate.hpp>
 #include <numeric>
+#include <algorithm>
 #include "dfs.h"
 #include "utils.h"
 #include "bfs.h"
@@ -27,7 +28,7 @@ void AdaptiveFindThreshold(const CvArr* image, double* low, double* high, int ap
 void _AdaptiveFindThreshold(CvMat *dx, CvMat *dy, double* low, double* high);
 
 //prior: radius, n*n
-//可乐21, 24*9 农夫11.7 28*10pixel
+//可乐21, 24*9 4*6 农夫11.7 28*10pixel 4*7
 double assume_radius = 21;
 double test_count = 24*9;
 int m =6;//x
@@ -110,7 +111,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i< centers.size(); i++) {
 
         visited.at<uchar>(centers.at(i)) = 0;
-        //  circle(visited,p1, 5,Scalar(155,50,255),-1,4,0);
+          circle(distImg,centers.at(i),5,Scalar(155,50,255),-1,4,0);
         //  circle(visited,p, 5,Scalar(155,50,255),-1,4,0);
     }
     int count_segmentation =0;//cout >0 indicates that we have at least one route to segment roi   successfully
@@ -120,8 +121,8 @@ int main(int argc, char **argv) {
 
     //cv::rectangle(distImg,sub_rect,Scalar(255),1,8,0);
 
-    imshowResize("first box",distImg);
-    waitKey(0);
+    //imshowResize("first box",distImg);
+   // waitKey(0);
 
     return 0;
 }

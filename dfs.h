@@ -50,6 +50,10 @@ void findblcenter(Mat& visited, vector<Point> centers, Point* bl);
  @param x is a double value, if x is negative ,return -1; if positive return 1
  */
 double sng(double x);
+/**
+ * @param belong_rect  fucntion is used to find the point that inner the rectangle or have intersection in the rectanglethe return value will be written into address of belong_rect. true means belong to the rect, false means not belong.
+ */
+void circle_belong_rect( Point blpoint, int direction[], double radius, double dist, vector<Point> centers,Mat& img,vector<bool>& belong_rect);
 
 
 

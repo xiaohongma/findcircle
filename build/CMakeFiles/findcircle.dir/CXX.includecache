@@ -43,6 +43,8 @@ opencv2/imgproc/imgproc.hpp
 -
 numeric
 -
+algorithm
+-
 dfs.h
 /home/sunbaiwan9527/projects/findcircle/dfs.h
 utils.h
@@ -54,6 +56,8 @@ bfs.h
 utils.h
 /home/sunbaiwan9527/projects/findcircle/utils.h
 numeric
+-
+algorithm
 -
 
 /home/sunbaiwan9527/projects/findcircle/utils.h
