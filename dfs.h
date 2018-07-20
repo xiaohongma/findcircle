@@ -1,3 +1,5 @@
+#ifndef DFS
+#define DFS
 #include <vector>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "utils.h"
@@ -14,8 +16,10 @@ are visited( setted to 255),we think we have found segmantion road.
 @param radius the mean radius
 @param mean_dist is the mean dist of neighbor circle centers
 @param img is roi image
+@param path save current path
+@param allpaths save allpaths
 */
-void dfs(int direction[8][2], Mat& visited, vector< Point > centers, double radius, double mean_dist, Mat& img,int* count_segmentation);
+void dfs(int direction[8][2], Mat& visited, vector< Point > centers, double radius, double mean_dist, Mat& img,int* count_segmentation, vector<Step>& path, vector<Path>& allpaths);
 /**
  * this function is used to check whether there are rectangles can be extented.
  @param visited is a map record the visiting status.
@@ -40,21 +44,32 @@ void setVisited(Mat& visited, Point blpoint, int direction[], uchar a, double ra
  @param visited nothing to say.
  @param centers same with the above
  */
-bool isEnd(Mat& visited, vector< Point > centers);
+bool isEnd(Mat& visited, vector< Point > centers,vector<Step>& path, vector<Path>& allpaths,int num);
 /**
  it is used to find the bottom left circles in every dfs
  */
 void findblcenter(Mat& visited, vector<Point> centers, Point* bl);
 /**
- This function is used to get the sign(+,-) of input value
- @param x is a double value, if x is negative ,return -1; if positive return 1
- */
+* @brief  This function is used to get the sign(+,-) of input value
+* 
+* @param x p_x:is a double value, if x is negative ,return -1; if positive return 1
+* @return double
+*/
 double sng(double x);
 /**
- * @param belong_rect  fucntion is used to find the point that inner the rectangle or have intersection in the rectanglethe return value will be written into address of belong_rect. true means belong to the rect, false means not belong.
- */
+* @brief fucntion is used to find the point that inner the rectangle or have intersection in the rectanglethe return value will be written into address of belong_rect. true means belong to the rect, false means not belong.
+* 
+* @param blpoint p_blpoint:...
+* @param direction p_direction:...
+* @param radius p_radius:...
+* @param dist p_dist:...
+* @param centers p_centers:...
+* @param img p_img:...
+* @param belong_rect p_belong_rect:...
+*/
 void circle_belong_rect( Point blpoint, int direction[], double radius, double dist, vector<Point> centers,Mat& img,vector<bool>& belong_rect);
 
+#endif
 
 
 

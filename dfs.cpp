@@ -1,15 +1,17 @@
 #include "dfs.h"
 using namespace std;
 
-
-void dfs(int direction[8][2], Mat& visited,vector<Point> centers, double radius, double mean_dist, Mat& img, int* count_segmentation)
+void dfs(int direction[8][2], Mat& visited,vector<Point> centers, double radius, double mean_dist, Mat& img, int* count_segmentation,vector<Step>& path, vector<Path>& allpaths)
 {
     // all of circle have been setted to flase
-    if (isEnd(visited,centers)) {
+    int num = abs(direction[0][1])*abs(direction[0][0]);
+    if (isEnd(visited,centers,path,allpaths,num)) {
         (*count_segmentation)++;
+        
         return;
     }
     Point point;// bottom left point
+     Step step;
     findblcenter(visited,centers,&point);
     //cout << centers.size()<<endl;
 
@@ -17,15 +19,21 @@ void dfs(int direction[8][2], Mat& visited,vector<Point> centers, double radius,
         //if have not visited
         //如果周围可以有邻接矩形
         if(extendAdjustRect(visited, centers,direction[i],point, radius,mean_dist,img)) {
-
-            setVisited(visited,point,direction[i],255,radius, mean_dist,centers,img);// set the m*n rect into flase
-            dfs(direction, visited,centers, radius, mean_dist,img,count_segmentation);
+            
+            // set the m*n rect into flase
+            setVisited(visited,point,direction[i],255,radius, mean_dist,centers,img);
+           step.direction = i;
+           step.p = point;
+           path.push_back(step);
+            dfs(direction, visited,centers, radius, mean_dist,img,count_segmentation,path,allpaths);
             setVisited(visited,point,direction[i],0,radius, mean_dist,centers,img);//back to set it to 0
+            path.pop_back();
         }
 
     }
 
 }
+
 
 // return of bool vector that indicates whether the center belong to this recantangle.(1:belong 0:not belong)
 //belong means the circle is inner of the rect or have interesection in the bounding
@@ -51,6 +59,7 @@ void circle_belong_rect( Point blpoint, int direction[], double radius, double d
 
 bool extendAdjustRect(Mat& visited,vector<Point> centers,int direction[], Point basePoint, double radius,double dist, Mat& img)
 {
+    
     int num = centers.size();
     vector<bool> belong_rectx(num);
      circle_belong_rect( basePoint, direction, radius, dist,centers,img, belong_rectx);
@@ -74,18 +83,31 @@ bool extendAdjustRect(Mat& visited,vector<Point> centers,int direction[], Point 
 
 }
 
-bool isEnd(Mat& visited, vector<Point> centers)
+bool isEnd(cv::Mat& visited, std::vector< cv::Point > centers, std::vector< Step >& path, std::vector<Path>& allpaths,int num)
 {
-    // int count =0;
+    //int num = centers.size();
+     int count =0;
     for( int i = 0; i < centers.size(); i ++ ) {
        
-        if(visited.at<uchar>(centers.at(i))==255) {
-            //  count++;
-            continue;
+        if(visited.at<uchar>(centers.at(i))==0) {
+              count++;
+              
+             //continue;
         }
-        return false;
     }
-    return true;
+        // if the remaining circles is less than  m*n(num of circles in one box), we think it is a right segmentation
+        if (count<round(1*num)){ 
+            Path p;
+             p.path = path;
+            p.tag = count;
+            allpaths.push_back(p); 
+           // for(int i = 0; i<path.size();i++){
+             //   cout<<"path"<<path.at(i).p<<"direction"<<path.at(i).direction<<endl;
+        //}
+        return true;
+    }
+
+return false; 
 
 }
 
@@ -135,7 +157,7 @@ void setVisited(Mat& visited, Point blpoint, int direction[],uchar a, double rad
      for(int i = 0; i<num ;i++){
          if(belong_rect.at(i)){
              visited.at<uchar>(centers.at(i)) = a;
-             circle(img,centers.at(i), radius,Scalar(a,a,a),1,8,0);
+             circle(img,centers.at(i), radius,Scalar(a,a,a),6,8,0);
         }
              
     }

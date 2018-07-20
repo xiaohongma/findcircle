@@ -1,3 +1,5 @@
+#ifndef BFS
+#define BFS
 #include <opencv2/imgproc/imgproc.hpp>
 #include <queue>
 using namespace cv;
@@ -8,4 +10,6 @@ void findblcenter(vector<int> visited, vector<Point> centers,Size size, Point* b
 bool isEnd(vector<int> visited, vector<Point> centers, Mat& img);
 bool extendAdjustRect(vector<int> visited,vector<Point> centers,int direction[], Point basePoint, double radius,double dist, Size size,Mat& img, vector<int>* points);
 void  bfs(int direction[8][2], Size size, vector<cv::Point> centers, double radius, double mean_dist, cv::Mat& img, int* count_segmentation);
+
+#endif
 
