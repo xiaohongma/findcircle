@@ -81,33 +81,9 @@ CMakeFiles/findcircle.dir/main.cpp.o.provides: CMakeFiles/findcircle.dir/main.cp
 CMakeFiles/findcircle.dir/main.cpp.o.provides.build: CMakeFiles/findcircle.dir/main.cpp.o
 
 
-CMakeFiles/findcircle.dir/dfs.cpp.o: CMakeFiles/findcircle.dir/flags.make
-CMakeFiles/findcircle.dir/dfs.cpp.o: ../dfs.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/findcircle.dir/dfs.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/findcircle.dir/dfs.cpp.o -c /home/sunbaiwan9527/projects/findcircle/dfs.cpp
-
-CMakeFiles/findcircle.dir/dfs.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/findcircle.dir/dfs.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sunbaiwan9527/projects/findcircle/dfs.cpp > CMakeFiles/findcircle.dir/dfs.cpp.i
-
-CMakeFiles/findcircle.dir/dfs.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/findcircle.dir/dfs.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sunbaiwan9527/projects/findcircle/dfs.cpp -o CMakeFiles/findcircle.dir/dfs.cpp.s
-
-CMakeFiles/findcircle.dir/dfs.cpp.o.requires:
-
-.PHONY : CMakeFiles/findcircle.dir/dfs.cpp.o.requires
-
-CMakeFiles/findcircle.dir/dfs.cpp.o.provides: CMakeFiles/findcircle.dir/dfs.cpp.o.requires
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/dfs.cpp.o.provides.build
-.PHONY : CMakeFiles/findcircle.dir/dfs.cpp.o.provides
-
-CMakeFiles/findcircle.dir/dfs.cpp.o.provides.build: CMakeFiles/findcircle.dir/dfs.cpp.o
-
-
 CMakeFiles/findcircle.dir/utils.cpp.o: CMakeFiles/findcircle.dir/flags.make
 CMakeFiles/findcircle.dir/utils.cpp.o: ../utils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/findcircle.dir/utils.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/findcircle.dir/utils.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/findcircle.dir/utils.cpp.o -c /home/sunbaiwan9527/projects/findcircle/utils.cpp
 
 CMakeFiles/findcircle.dir/utils.cpp.i: cmake_force
@@ -129,44 +105,146 @@ CMakeFiles/findcircle.dir/utils.cpp.o.provides: CMakeFiles/findcircle.dir/utils.
 CMakeFiles/findcircle.dir/utils.cpp.o.provides.build: CMakeFiles/findcircle.dir/utils.cpp.o
 
 
-CMakeFiles/findcircle.dir/bfs.cpp.o: CMakeFiles/findcircle.dir/flags.make
-CMakeFiles/findcircle.dir/bfs.cpp.o: ../bfs.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/findcircle.dir/bfs.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/findcircle.dir/bfs.cpp.o -c /home/sunbaiwan9527/projects/findcircle/bfs.cpp
+CMakeFiles/findcircle.dir/segmentation.cpp.o: CMakeFiles/findcircle.dir/flags.make
+CMakeFiles/findcircle.dir/segmentation.cpp.o: ../segmentation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/findcircle.dir/segmentation.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/findcircle.dir/segmentation.cpp.o -c /home/sunbaiwan9527/projects/findcircle/segmentation.cpp
 
-CMakeFiles/findcircle.dir/bfs.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/findcircle.dir/bfs.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sunbaiwan9527/projects/findcircle/bfs.cpp > CMakeFiles/findcircle.dir/bfs.cpp.i
+CMakeFiles/findcircle.dir/segmentation.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/findcircle.dir/segmentation.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sunbaiwan9527/projects/findcircle/segmentation.cpp > CMakeFiles/findcircle.dir/segmentation.cpp.i
 
-CMakeFiles/findcircle.dir/bfs.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/findcircle.dir/bfs.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sunbaiwan9527/projects/findcircle/bfs.cpp -o CMakeFiles/findcircle.dir/bfs.cpp.s
+CMakeFiles/findcircle.dir/segmentation.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/findcircle.dir/segmentation.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sunbaiwan9527/projects/findcircle/segmentation.cpp -o CMakeFiles/findcircle.dir/segmentation.cpp.s
 
-CMakeFiles/findcircle.dir/bfs.cpp.o.requires:
+CMakeFiles/findcircle.dir/segmentation.cpp.o.requires:
 
-.PHONY : CMakeFiles/findcircle.dir/bfs.cpp.o.requires
+.PHONY : CMakeFiles/findcircle.dir/segmentation.cpp.o.requires
 
-CMakeFiles/findcircle.dir/bfs.cpp.o.provides: CMakeFiles/findcircle.dir/bfs.cpp.o.requires
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/bfs.cpp.o.provides.build
-.PHONY : CMakeFiles/findcircle.dir/bfs.cpp.o.provides
+CMakeFiles/findcircle.dir/segmentation.cpp.o.provides: CMakeFiles/findcircle.dir/segmentation.cpp.o.requires
+	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/segmentation.cpp.o.provides.build
+.PHONY : CMakeFiles/findcircle.dir/segmentation.cpp.o.provides
 
-CMakeFiles/findcircle.dir/bfs.cpp.o.provides.build: CMakeFiles/findcircle.dir/bfs.cpp.o
+CMakeFiles/findcircle.dir/segmentation.cpp.o.provides.build: CMakeFiles/findcircle.dir/segmentation.cpp.o
+
+
+CMakeFiles/findcircle.dir/dfs.cpp.o: CMakeFiles/findcircle.dir/flags.make
+CMakeFiles/findcircle.dir/dfs.cpp.o: ../dfs.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/findcircle.dir/dfs.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/findcircle.dir/dfs.cpp.o -c /home/sunbaiwan9527/projects/findcircle/dfs.cpp
+
+CMakeFiles/findcircle.dir/dfs.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/findcircle.dir/dfs.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sunbaiwan9527/projects/findcircle/dfs.cpp > CMakeFiles/findcircle.dir/dfs.cpp.i
+
+CMakeFiles/findcircle.dir/dfs.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/findcircle.dir/dfs.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sunbaiwan9527/projects/findcircle/dfs.cpp -o CMakeFiles/findcircle.dir/dfs.cpp.s
+
+CMakeFiles/findcircle.dir/dfs.cpp.o.requires:
+
+.PHONY : CMakeFiles/findcircle.dir/dfs.cpp.o.requires
+
+CMakeFiles/findcircle.dir/dfs.cpp.o.provides: CMakeFiles/findcircle.dir/dfs.cpp.o.requires
+	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/dfs.cpp.o.provides.build
+.PHONY : CMakeFiles/findcircle.dir/dfs.cpp.o.provides
+
+CMakeFiles/findcircle.dir/dfs.cpp.o.provides.build: CMakeFiles/findcircle.dir/dfs.cpp.o
+
+
+CMakeFiles/findcircle.dir/feature_circle.cpp.o: CMakeFiles/findcircle.dir/flags.make
+CMakeFiles/findcircle.dir/feature_circle.cpp.o: ../feature_circle.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/findcircle.dir/feature_circle.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/findcircle.dir/feature_circle.cpp.o -c /home/sunbaiwan9527/projects/findcircle/feature_circle.cpp
+
+CMakeFiles/findcircle.dir/feature_circle.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/findcircle.dir/feature_circle.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sunbaiwan9527/projects/findcircle/feature_circle.cpp > CMakeFiles/findcircle.dir/feature_circle.cpp.i
+
+CMakeFiles/findcircle.dir/feature_circle.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/findcircle.dir/feature_circle.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sunbaiwan9527/projects/findcircle/feature_circle.cpp -o CMakeFiles/findcircle.dir/feature_circle.cpp.s
+
+CMakeFiles/findcircle.dir/feature_circle.cpp.o.requires:
+
+.PHONY : CMakeFiles/findcircle.dir/feature_circle.cpp.o.requires
+
+CMakeFiles/findcircle.dir/feature_circle.cpp.o.provides: CMakeFiles/findcircle.dir/feature_circle.cpp.o.requires
+	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/feature_circle.cpp.o.provides.build
+.PHONY : CMakeFiles/findcircle.dir/feature_circle.cpp.o.provides
+
+CMakeFiles/findcircle.dir/feature_circle.cpp.o.provides.build: CMakeFiles/findcircle.dir/feature_circle.cpp.o
+
+
+CMakeFiles/findcircle.dir/feature_contour.cpp.o: CMakeFiles/findcircle.dir/flags.make
+CMakeFiles/findcircle.dir/feature_contour.cpp.o: ../feature_contour.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/findcircle.dir/feature_contour.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/findcircle.dir/feature_contour.cpp.o -c /home/sunbaiwan9527/projects/findcircle/feature_contour.cpp
+
+CMakeFiles/findcircle.dir/feature_contour.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/findcircle.dir/feature_contour.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sunbaiwan9527/projects/findcircle/feature_contour.cpp > CMakeFiles/findcircle.dir/feature_contour.cpp.i
+
+CMakeFiles/findcircle.dir/feature_contour.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/findcircle.dir/feature_contour.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sunbaiwan9527/projects/findcircle/feature_contour.cpp -o CMakeFiles/findcircle.dir/feature_contour.cpp.s
+
+CMakeFiles/findcircle.dir/feature_contour.cpp.o.requires:
+
+.PHONY : CMakeFiles/findcircle.dir/feature_contour.cpp.o.requires
+
+CMakeFiles/findcircle.dir/feature_contour.cpp.o.provides: CMakeFiles/findcircle.dir/feature_contour.cpp.o.requires
+	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/feature_contour.cpp.o.provides.build
+.PHONY : CMakeFiles/findcircle.dir/feature_contour.cpp.o.provides
+
+CMakeFiles/findcircle.dir/feature_contour.cpp.o.provides.build: CMakeFiles/findcircle.dir/feature_contour.cpp.o
+
+
+CMakeFiles/findcircle.dir/contours.cpp.o: CMakeFiles/findcircle.dir/flags.make
+CMakeFiles/findcircle.dir/contours.cpp.o: ../contours.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/findcircle.dir/contours.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/findcircle.dir/contours.cpp.o -c /home/sunbaiwan9527/projects/findcircle/contours.cpp
+
+CMakeFiles/findcircle.dir/contours.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/findcircle.dir/contours.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sunbaiwan9527/projects/findcircle/contours.cpp > CMakeFiles/findcircle.dir/contours.cpp.i
+
+CMakeFiles/findcircle.dir/contours.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/findcircle.dir/contours.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sunbaiwan9527/projects/findcircle/contours.cpp -o CMakeFiles/findcircle.dir/contours.cpp.s
+
+CMakeFiles/findcircle.dir/contours.cpp.o.requires:
+
+.PHONY : CMakeFiles/findcircle.dir/contours.cpp.o.requires
+
+CMakeFiles/findcircle.dir/contours.cpp.o.provides: CMakeFiles/findcircle.dir/contours.cpp.o.requires
+	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/contours.cpp.o.provides.build
+.PHONY : CMakeFiles/findcircle.dir/contours.cpp.o.provides
+
+CMakeFiles/findcircle.dir/contours.cpp.o.provides.build: CMakeFiles/findcircle.dir/contours.cpp.o
 
 
 # Object files for target findcircle
 findcircle_OBJECTS = \
 "CMakeFiles/findcircle.dir/main.cpp.o" \
-"CMakeFiles/findcircle.dir/dfs.cpp.o" \
 "CMakeFiles/findcircle.dir/utils.cpp.o" \
-"CMakeFiles/findcircle.dir/bfs.cpp.o"
+"CMakeFiles/findcircle.dir/segmentation.cpp.o" \
+"CMakeFiles/findcircle.dir/dfs.cpp.o" \
+"CMakeFiles/findcircle.dir/feature_circle.cpp.o" \
+"CMakeFiles/findcircle.dir/feature_contour.cpp.o" \
+"CMakeFiles/findcircle.dir/contours.cpp.o"
 
 # External object files for target findcircle
 findcircle_EXTERNAL_OBJECTS =
 
 findcircle: CMakeFiles/findcircle.dir/main.cpp.o
-findcircle: CMakeFiles/findcircle.dir/dfs.cpp.o
 findcircle: CMakeFiles/findcircle.dir/utils.cpp.o
-findcircle: CMakeFiles/findcircle.dir/bfs.cpp.o
+findcircle: CMakeFiles/findcircle.dir/segmentation.cpp.o
+findcircle: CMakeFiles/findcircle.dir/dfs.cpp.o
+findcircle: CMakeFiles/findcircle.dir/feature_circle.cpp.o
+findcircle: CMakeFiles/findcircle.dir/feature_contour.cpp.o
+findcircle: CMakeFiles/findcircle.dir/contours.cpp.o
 findcircle: CMakeFiles/findcircle.dir/build.make
 findcircle: /usr/local/lib/libopencv_dnn.so.3.3.1
 findcircle: /usr/local/lib/libopencv_ml.so.3.3.1
@@ -187,7 +265,7 @@ findcircle: /usr/local/lib/libopencv_imgcodecs.so.3.3.1
 findcircle: /usr/local/lib/libopencv_imgproc.so.3.3.1
 findcircle: /usr/local/lib/libopencv_core.so.3.3.1
 findcircle: CMakeFiles/findcircle.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable findcircle"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/sunbaiwan9527/projects/findcircle/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable findcircle"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/findcircle.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -196,9 +274,12 @@ CMakeFiles/findcircle.dir/build: findcircle
 .PHONY : CMakeFiles/findcircle.dir/build
 
 CMakeFiles/findcircle.dir/requires: CMakeFiles/findcircle.dir/main.cpp.o.requires
-CMakeFiles/findcircle.dir/requires: CMakeFiles/findcircle.dir/dfs.cpp.o.requires
 CMakeFiles/findcircle.dir/requires: CMakeFiles/findcircle.dir/utils.cpp.o.requires
-CMakeFiles/findcircle.dir/requires: CMakeFiles/findcircle.dir/bfs.cpp.o.requires
+CMakeFiles/findcircle.dir/requires: CMakeFiles/findcircle.dir/segmentation.cpp.o.requires
+CMakeFiles/findcircle.dir/requires: CMakeFiles/findcircle.dir/dfs.cpp.o.requires
+CMakeFiles/findcircle.dir/requires: CMakeFiles/findcircle.dir/feature_circle.cpp.o.requires
+CMakeFiles/findcircle.dir/requires: CMakeFiles/findcircle.dir/feature_contour.cpp.o.requires
+CMakeFiles/findcircle.dir/requires: CMakeFiles/findcircle.dir/contours.cpp.o.requires
 
 .PHONY : CMakeFiles/findcircle.dir/requires
 

@@ -179,30 +179,7 @@ void imshowResize(const cv::String& winname, const cv::Mat& img)
     cvReleaseHist(&hist);
 }
 
-void printoutPath(vector<Path>& allpath)
-{
-        if(allpath.empty()){
-        cout <<"no segmentation path have been found"<<endl;
-    }else if(allpath.size()==1){
-        cout << "just one path found!" <<endl;
-        Path bestpath = allpath.at(0);
-        for(int j = 0;j<bestpath.path.size();j++){
-            cout<<"path"<<bestpath.path.at(j).p<<"direction"<<bestpath.path.at(j).direction<<endl; 
-            }
-        
-    }else{
-        int remaining = allpath.at(0).tag;
-        int index = 0;
-        for(int i = 1;i<allpath. size();i++){
-            //vector<Step> path = allpath.at(i).path; 
-            int tag = allpath.at(i).tag;//remaining points
-           if(tag<remaining) {index = i;remaining = tag;}
-        } 
-        cout <<"more than one path found, return the best path"<< endl;
-        Path bestpath = allpath.at(index);
-         for(int j = 0;j<bestpath.path.size();j++){
-            cout<<"path"<<bestpath.path.at(j).p<<"direction"<<bestpath.path.at(j).direction<<endl; 
-            }
-        
-    }
+int sng(double x) {
+    return (x <0)? -1 : (x> 0);
 }
+

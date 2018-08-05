@@ -6,17 +6,32 @@
 },
 {
   "directory": "/home/sunbaiwan9527/projects/findcircle/build",
-  "command": "/usr/bin/c++   -isystem /usr/local/include -isystem /usr/local/include/opencv  -std=c++11 -g   -o CMakeFiles/findcircle.dir/dfs.cpp.o -c /home/sunbaiwan9527/projects/findcircle/dfs.cpp",
-  "file": "/home/sunbaiwan9527/projects/findcircle/dfs.cpp"
-},
-{
-  "directory": "/home/sunbaiwan9527/projects/findcircle/build",
   "command": "/usr/bin/c++   -isystem /usr/local/include -isystem /usr/local/include/opencv  -std=c++11 -g   -o CMakeFiles/findcircle.dir/utils.cpp.o -c /home/sunbaiwan9527/projects/findcircle/utils.cpp",
   "file": "/home/sunbaiwan9527/projects/findcircle/utils.cpp"
 },
 {
   "directory": "/home/sunbaiwan9527/projects/findcircle/build",
-  "command": "/usr/bin/c++   -isystem /usr/local/include -isystem /usr/local/include/opencv  -std=c++11 -g   -o CMakeFiles/findcircle.dir/bfs.cpp.o -c /home/sunbaiwan9527/projects/findcircle/bfs.cpp",
-  "file": "/home/sunbaiwan9527/projects/findcircle/bfs.cpp"
+  "command": "/usr/bin/c++   -isystem /usr/local/include -isystem /usr/local/include/opencv  -std=c++11 -g   -o CMakeFiles/findcircle.dir/segmentation.cpp.o -c /home/sunbaiwan9527/projects/findcircle/segmentation.cpp",
+  "file": "/home/sunbaiwan9527/projects/findcircle/segmentation.cpp"
+},
+{
+  "directory": "/home/sunbaiwan9527/projects/findcircle/build",
+  "command": "/usr/bin/c++   -isystem /usr/local/include -isystem /usr/local/include/opencv  -std=c++11 -g   -o CMakeFiles/findcircle.dir/dfs.cpp.o -c /home/sunbaiwan9527/projects/findcircle/dfs.cpp",
+  "file": "/home/sunbaiwan9527/projects/findcircle/dfs.cpp"
+},
+{
+  "directory": "/home/sunbaiwan9527/projects/findcircle/build",
+  "command": "/usr/bin/c++   -isystem /usr/local/include -isystem /usr/local/include/opencv  -std=c++11 -g   -o CMakeFiles/findcircle.dir/feature_circle.cpp.o -c /home/sunbaiwan9527/projects/findcircle/feature_circle.cpp",
+  "file": "/home/sunbaiwan9527/projects/findcircle/feature_circle.cpp"
+},
+{
+  "directory": "/home/sunbaiwan9527/projects/findcircle/build",
+  "command": "/usr/bin/c++   -isystem /usr/local/include -isystem /usr/local/include/opencv  -std=c++11 -g   -o CMakeFiles/findcircle.dir/feature_contour.cpp.o -c /home/sunbaiwan9527/projects/findcircle/feature_contour.cpp",
+  "file": "/home/sunbaiwan9527/projects/findcircle/feature_contour.cpp"
+},
+{
+  "directory": "/home/sunbaiwan9527/projects/findcircle/build",
+  "command": "/usr/bin/c++   -isystem /usr/local/include -isystem /usr/local/include/opencv  -std=c++11 -g   -o CMakeFiles/findcircle.dir/contours.cpp.o -c /home/sunbaiwan9527/projects/findcircle/contours.cpp",
+  "file": "/home/sunbaiwan9527/projects/findcircle/contours.cpp"
 }
 ]

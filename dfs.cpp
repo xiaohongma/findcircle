@@ -1,173 +1,169 @@
+
+#include "utils.h"
+#include "feature_contour.h"
+#include "contours.h"
 #include "dfs.h"
+#include "polygon_calculation.hpp"
 using namespace std;
 
-void dfs(int direction[8][2], Mat& visited,vector<Point> centers, double radius, double mean_dist, Mat& img, int* count_segmentation,vector<Step>& path, vector<Path>& allpaths)
-{
-    // all of circle have been setted to flase
-    int num = abs(direction[0][1])*abs(direction[0][0]);
-    if (isEnd(visited,centers,path,allpaths,num)) {
-        (*count_segmentation)++;
-        
-        return;
-    }
-    Point point;// bottom left point
-     Step step;
-    findblcenter(visited,centers,&point);
-    //cout << centers.size()<<endl;
 
-    for (int i = 0; i<8; i++) {
-        //if have not visited
-        //如果周围可以有邻接矩形
-        if(extendAdjustRect(visited, centers,direction[i],point, radius,mean_dist,img)) {
-            
-            // set the m*n rect into flase
-            setVisited(visited,point,direction[i],255,radius, mean_dist,centers,img);
-           step.direction = i;
-           step.p = point;
-           path.push_back(step);
-            dfs(direction, visited,centers, radius, mean_dist,img,count_segmentation,path,allpaths);
-            setVisited(visited,point,direction[i],0,radius, mean_dist,centers,img);//back to set it to 0
-            path.pop_back();
+void findtl(cv::Mat& visited, cv::Mat& img,cv::Point* point)
+{
+    int distance = visited.rows*visited.rows+visited.cols*visited.cols;
+    Point tlpoint(visited.cols,visited.rows);
+    for(int y  =0; y<visited.rows;y++){
+        uchar* row = visited.ptr<uchar>(y);
+        for(int x = 0;x<visited.cols;x++){
+            if(row[x]==0){
+                int d = x*x+y*y;
+                if(d<distance){
+                    distance = d;
+                    tlpoint = Point(x,y);
+                   // break;
+                }
+             }
         }
-
     }
-
-}
-
-
-// return of bool vector that indicates whether the center belong to this recantangle.(1:belong 0:not belong)
-//belong means the circle is inner of the rect or have interesection in the bounding
-void circle_belong_rect( Point blpoint, int direction[], double radius, double dist, vector<Point> centers,Mat& img,vector<bool>& belong_rect){
-     Point p1(blpoint.x-sng(direction[0])*radius, blpoint.y-radius*sng(direction[1]));
-     Point p2(p1.x, p1.y + direction[1]*dist+ 2*radius*sng(direction[1]));
-     Point p3(p1.x+direction[0]*dist+2*radius*sng(direction[0]), p1.y);
-
-    Rect rect(p2,p3);
-    int num = centers.size();
-    Point rect_center = 0.5*(rect.br()+rect.tl());
-    Point h(abs(rect.tl().x-rect.br().x)/2,abs(rect.tl().y-rect.br().y)/2);// the radius of rect
-    // calculate the distance from centers to rect, if the distance less than radius, we  think the circle still belong to this rectangle.
-    for(int i  = 0; i < num ;i ++ ){
-        Point p(abs(centers.at(i).x-rect_center.x), abs(centers.at(i).y-rect_center.y));
-        Point p2(max((p.x-h.x),0),max((p.y-h.y),0));
-        belong_rect.at(i) = (p2.dot(p2)<=radius*radius)||(rect.contains(centers.at(i)));
-        
-    }
-    //rectangle(img,rect,Scalar(255,0,0),1,16);
-
-}
-
-bool extendAdjustRect(Mat& visited,vector<Point> centers,int direction[], Point basePoint, double radius,double dist, Mat& img)
-{
+     *point = tlpoint;
     
-    int num = centers.size();
-    vector<bool> belong_rectx(num);
-     circle_belong_rect( basePoint, direction, radius, dist,centers,img, belong_rectx);
-    // the next rect contains less unvisited circle centers than m*n, we also return current point.
-    int count = 0;
-    for (int i = 0; i < num; i++) {
-        if(belong_rectx.at(i)&&visited.at<uchar>(centers.at(i))==0)
-            count++;
-    }
-     
-    //standard number in every rectangle
-    int standard_c = (abs(direction[0])+1)*(abs(direction[1])+1);
-    if(abs(standard_c-count )>3 ) {
-        return false;
-    }
-    cout << "containing point"<<count << endl;
-
-
-    return true; 
-
-
 }
 
-bool isEnd(cv::Mat& visited, std::vector< cv::Point > centers, std::vector< Step >& path, std::vector<Path>& allpaths,int num)
-{
-    //int num = centers.size();
-     int count =0;
-    for( int i = 0; i < centers.size(); i ++ ) {
-       
-        if(visited.at<uchar>(centers.at(i))==0) {
-              count++;
-              
-             //continue;
-        }
-    }
-        // if the remaining circles is less than  m*n(num of circles in one box), we think it is a right segmentation
-        if (count<round(1*num)){ 
-            Path p;
-             p.path = path;
-            p.tag = count;
-            allpaths.push_back(p); 
-           // for(int i = 0; i<path.size();i++){
-             //   cout<<"path"<<path.at(i).p<<"direction"<<path.at(i).direction<<endl;
-        //}
+// decide whether or not to continue dfs, waiting for improvement
+bool isContinue(float score){
+    
+   // sort(score.begin(),score.end());//the maximun of score
+    if(score>=0.8){
         return true;
-    }
-
-return false; 
-
+    } 
+    return false;
 }
 
-double sng(double x) {
-    return (x <0)? -1 : (x> 0);
-}
-//find the bottom center of circles
-void findblcenter(Mat& visited, vector<Point> centers, Point* bl) {
 
-    vector<Point> remaining;
-    for (int i = 0; i < centers.size(); i++) {
-        if(visited.at<uchar>(centers.at(i))==0) {
-            remaining.push_back(centers.at(i));
-            //circle(img,centers.at(i),radius,Scalar(0,0,100),-1,4,0);
+
+
+/*bool isEnd(cv::Mat& visited, std::vector< int > params)
+{
+
+    bool isend = false;
+    int width = params.at(0);
+    int height = params.at(1);
+    int count = 0;
+    for(int i = 0;i<visited.rows;i++){
+        uchar* row = visited.ptr<uchar>(i);
+        for(int j = 0;j<visited.cols;j++){
+            if(row[j]==0) count++;
         }
     }
    
-    //waiting for modification
-    if(remaining.empty()|| remaining.size() ==1) {
-        return; 
+    if(count<width*height){
+        cout<<"unvisited area"<<count << endl;
+        isend = true;
     }
 
+    return isend;
+}*/
 
-    int x_lb = 0;
-    int y_lb = visited.rows;
-    double distance = (remaining.at(0).x-x_lb)*(remaining.at(0).x-x_lb)+(remaining.at(0).y-y_lb)*(remaining.at(0).y-y_lb);
-    int index = 0;
-    for(int i =1; i< remaining.size(); i++) {
-        double d2 = (remaining.at(i).x-x_lb)*(remaining.at(i).x-x_lb)+(remaining.at(i).y-y_lb)*(remaining.at(i).y-y_lb);
-        if(d2 < distance) {
-            distance = d2;
-            index = i;
-        }
+
+
+void setVisited(cv::Mat& visited, cv::Mat& img,vector<Point>& visit_points,uchar value)
+{
+    if(visit_points.empty()) return;
+    int num = visit_points.size();
+    for(int i = 0;i<num;i++){
+        visited.at<uchar>(visit_points.at(i))=value;
     }
-    cout << "index" << index << endl;
-
-    *bl = remaining.at(index);
-    
-
-}
-
-void setVisited(Mat& visited, Point blpoint, int direction[],uchar a, double radius, double dist, vector<Point> centers, Mat& img){
-    int num = centers.size();
-    vector<bool> belong_rect(num);
-     circle_belong_rect( blpoint, direction, radius, dist,centers,img, belong_rect);
      
-     for(int i = 0; i<num ;i++){
-         if(belong_rect.at(i)){
-             visited.at<uchar>(centers.at(i)) = a;
-             circle(img,centers.at(i), radius,Scalar(a,a,a),6,8,0);
+    /*
+    int i = 0;
+    while(true){
+        fstream file;
+        file.open("contour_"+to_string(i)+".jpg",ios_base::in);
+        if(!file){
+            imwrite("contour_"+to_string(i)+".jpg",visited);
+            break;
+        }else{
+            i++;
         }
-             
     }
+    */
     
-    //rectangle(img,rect,Scalar(255,0,0),1,16);
-     //circle(img,blpoint,10,Scalar(255,0,0),-1,16,0);
-    imshowResize("xx",img);
-     waitKey(0);
-         
+
+
+
+    // visited(bounding) = value;
+     
+    //rectangle(img,bounding,Scalar(value,0,0),1,16);
+   
+   // imshowResize("xx",img);
+  //  imshowResize("visited",visited);
+   // waitKey(0);
+    
 }
+
+void intersection_rect_mask(cv::Rect& rect, cv::Mat& mask, float* ratio)
+{
+    int x0 = rect.tl().x;
+    int y0 = rect.tl().y;
+    int x_end = rect.br().x;
+    int y_end = rect.br().y;
+    
+    int count = 0;
+    for(int x = x0;x<x_end;x++){
+        for(int y = y0;y<y_end;y++){
+            if(mask.at<uchar>(Point(x,y))==255)
+                count++;
+        }
+    }
+    *ratio = (float)count/(rect.width*rect.height);
+    cout <<"ratio" <<*ratio<<endl;
+    
+}
+
+void find_start_point(cv::Mat& visited, cv::Mat& img,cv::Point* point){
+   
+    Mat mat_projection_jpg = ~visited;
+	Mat dist;
+	Mat kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(7, 7));
+	morphologyEx(mat_projection_jpg, dist, cv::MORPH_OPEN, kernel);
+	kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(21, 21));
+	morphologyEx(dist, dist, cv::MORPH_CLOSE, kernel);
+	/*imshowResize("original", mat_projection_jpg);
+	waitKey(1);
+	imshowResize("dist", dist);
+	waitKey(1);*/
+
+	Mat mat_pro;
+	threshold(dist, mat_pro, 100, 255, THRESH_BINARY);
+	Mat mat_for_show = Mat(mat_projection_jpg.size(), CV_8UC3, Scalar(0));
+	std::vector<cv::Point> vec_points_max_poly;
+	getContour(mat_pro, mat_for_show, vec_points_max_poly);
+	//waitKey(1);
+
+	// 测试
+	if (!is_counterclockwise(vec_points_max_poly)) 
+	{
+		std::reverse(vec_points_max_poly.begin(), vec_points_max_poly.end());
+	}
+	auto vec_n_index = get_recommended_point_index_to_dfs(vec_points_max_poly);
+    if(vec_n_index.empty()) return;
+    *point = vec_points_max_poly[vec_n_index.at(0)];
+    cout<<"best points numbe"<<*point<<endl;
+    cv::circle(mat_for_show,*point, 10, cv::Scalar(255, 125, 125), -1); 
+    imshowResize("contours",mat_for_show);
+
+	/*for (auto n_index : vec_n_index) 
+	{
+		cv::circle(mat_for_show, vec_points_max_poly[n_index], 10, cv::Scalar(255, 125, 125), -1);
+		cv::namedWindow("test", cv::WINDOW_FREERATIO);
+		imshowResize("test", mat_for_show);
+		cv::waitKey(0); // ms
+	}
+	cv::namedWindow("test", cv::WINDOW_FREERATIO);
+	imshowResize("test", mat_for_show);
+	cv::waitKey(0); // ms
+    */
+}
+
 
 
 
