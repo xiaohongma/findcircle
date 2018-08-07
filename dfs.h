@@ -83,7 +83,7 @@ void findtl(cv::Mat& visited, cv::Mat& img,cv::Point* point);
 bool isContinue(float score);
 
 void intersection_rect_mask(cv::Rect& rect, cv::Mat& mask, float* ratio);
-void find_start_point(cv::Mat& visited, cv::Mat& img,cv::Point* point);
+void find_start_point( cv::Mat& visited, cv::Mat& img, cv::Point* point);
 
 
 
@@ -103,7 +103,6 @@ template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int
     Point point(-1,-1);// top left point
    // findtl(visited,img,&point); 
     find_start_point(visited,img,&point);
-    cout<<"dfs st2"<<point<<endl;
     if(point.x==-1 && point.y==-1) return;
 
     for (int i = 0; i<8; i++) {
@@ -122,8 +121,8 @@ template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int
            step.p = point;
            step.score = score;
            path.push_back(step);
-            dfs(visited,img,mask,direction,feature,units,params,path,allpaths);
-            setVisited(visited,img,visit_points,0);
+           dfs(visited,img,mask,direction,feature,units,params,path,allpaths);
+           setVisited(visited,img,visit_points,0);
            // setVisited(visited,img,mask,bounding,0);//back to set it to 0
             path.pop_back();
         }

@@ -63,8 +63,6 @@ int segmentation_roi(cv::Mat& roi, cv::Mat& mask, int feature, int method, std::
     }*/
     printoutPath(roi,allpaths,direction);
     
-    imshowResize("xx",roi);
-    waitKey(0);
     
    
     return 0;
@@ -73,14 +71,15 @@ int segmentation_roi(cv::Mat& roi, cv::Mat& mask, int feature, int method, std::
 void printoutPath(Mat& img,vector<PathInfo>& allpath, int direction[8][2])
 {
     PathInfo bestpath;
+    bool print_best_path = true;
     if(allpath.empty()){
         cout <<"no segmentation path have been found"<<endl;
     }else if(allpath.size()==1){
-        cout << "just one path found!" <<endl;
+        cout << "just one path found!" <<endl;  
          bestpath = allpath.at(0);
-        for(int j = 0;j<bestpath.path.size();j++){
+        /*for(int j = 0;j<bestpath.path.size();j++){
             cout<<"path"<<bestpath.path.at(j).p<<"direction"<<bestpath.path.at(j).direction <<" score "<<bestpath.path.at(j).score<<endl; 
-            } 
+            } */
         
     }else{
         float score = get_mean_score(allpath.at(0).path);
@@ -96,14 +95,43 @@ void printoutPath(Mat& img,vector<PathInfo>& allpath, int direction[8][2])
     }
     
     
-    for(int j = 0;j<bestpath.path.size();j++){
+    
+    if(print_best_path){
+        for(int j = 0;j<bestpath.path.size();j++){
              Point p = bestpath.path.at(j).p;
              int d = bestpath.path.at(j).direction;
              Point c1(p.x+direction[d][0],p.y);
              Point c2(p.x,p.y+direction[d][1]);
              rectangle(img,Rect(c1,c2),Scalar(255));
-            cout<<"path"<<p<<"direction"<<d<<endl; 
+             putText(img,to_string(j+1),p,FONT_HERSHEY_SCRIPT_SIMPLEX,2,Scalar(255));
+            cout<<"path "<<p<<" direction "<<d<<" score "<<bestpath.path.at(j).score<<endl; 
+        }
+        imshowResize("segmentation result",img);
+        waitKey(0);
+        
+    }else{
+        for(int m = 0;m<allpath.size();m++){
+            //m =;
+            PathInfo path = allpath.at(m);
+            for(int j = 0;j<path.path.size();j++){
+                Point p = path.path.at(j).p;
+                int d = path.path.at(j).direction;
+                Point c1(p.x+direction[d][0],p.y);
+                Point c2(p.x,p.y+direction[d][1]);
+                rectangle(img,Rect(c1,c2),Scalar(255));
+                putText(img,to_string(j+1),p,FONT_HERSHEY_SCRIPT_SIMPLEX,2,Scalar(255));
+                cout<<"path "<<p<<" direction "<<d<<" score "<<path.path.at(j).score<<endl; 
+            }
+           
+            imshowResize("segmentation result path "+to_string(m),img);
+            waitKey(0);
+           
+        }
+        
+        
     }
+    
+    
         
 }
 

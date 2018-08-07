@@ -6,65 +6,69 @@ void extend_by_circle(Mat& visited, Mat& img,Mat& mask,int direction[], Point ba
 {
     if(centers.empty()) return;
      int radius = params.at(4);
-    
-     Point p2(basePoint.x+direction[0],basePoint.y + direction[1]);//br point
-     Rect rect(basePoint,p2);
-    Rect whole(Point(0,0),visited.size());
-    rect &= whole;
-     
-    float ratio;
-     intersection_rect_mask(rect,mask,&ratio);
-
-         if( ratio<=0.8  ){
-             *score =0;
-        
-         return;
-       }
-    
-
-    
-     
-   int num = centers.size();
-    vector<bool> belong_rectx(num);
-    circle_belong_rect(rect,radius,centers,img, belong_rectx);
-   
-    
-    vector <Point> remaining;
-    vector<Point> circle_points;
-    Mat visited_clone = visited.clone();
-    // Mat visited_clone(visited.size(),CV_8UC1,Scalar(0));
-    // the next rect contains less unvisited circle centers than m*n, we also return current point.
-    int circle_count = 0;
-    for (int i = 0; i < num; i++) {
-        circle(visited_clone,centers.at(i),radius,Scalar(155),1,4,0);
-        if(belong_rectx.at(i)&&visited.at<uchar>(centers.at(i))==0){
-            circle_count++;
-            remaining.push_back(centers.at(i));
-            vector<Point> pts;
-           // points_on_circle(centers.at(i),radius,pts);
-            raster_circle(centers.at(i),radius,pts);
-            circle_points.insert(circle_points.end(),pts.begin(),pts.end());
-        }
+     // Mat visited_clone(visited.size(),CV_8UC1,Scalar(0));
+     Mat visited_clone = visited.clone();
+    int num = centers.size();
+    for(int i = 0; i<num;i++){
+        circle(visited_clone,centers.at(i),radius,Scalar(155));
     }
     
-    if(remaining.empty()){
-        //setVisited(visited,img,mask,rect,255);;
-       // bounding = rect;
-        *score = 0;
-        cout <<"no remaining circles"<<endl;
+    Rect bounding_rect;
+    find_bounding_rect(visited_clone,img,mask,basePoint,direction,centers,radius,bounding_rect);
+    cout <<"direction" <<direction[0]<<" "<<direction[1]<< endl;
+
+    if(bounding_rect.empty()){
+        cout <<"no bounding rect"<<endl;
         return;
     }
+    
+    int m = params.at(2);
+    int n  = params.at(3);
+    vector<Point> remaining_circles;
+    for(int i = 0;i<num;i++){
+       
+       if(bounding_rect.contains(centers.at(i))  && visited.at<uchar>(centers.at(i))==0)
+           remaining_circles.push_back(centers.at(i));
+    }
+    cout <<"remaining"<<remaining_circles.size()<<endl;
+    
+    
+
+    bool re_seg = abs(remaining_circles.size()-m*n)>=min(m,n);//contains too many circles
+    if(re_seg){
+        //cout <<"count_circle   "<<remaining_circles.size()<<endl;
+        Point reloc_point;
+        find_nearest_point(remaining_circles,basePoint,&reloc_point);//nearest center to the basepoint
+        Point new_base_point(reloc_point.x-sng(direction[0])*radius,reloc_point.y-radius*sng(direction[1]));
+        
+        int d = (basePoint-new_base_point).dot(Point(direction[0],direction[1]));
+       cout << "d "<< d << endl;
+        if(d>0){
+        
+            //circle(img,new_base_point,10,Scalar(255),-1);
+            find_bounding_rect(visited_clone,img,mask,new_base_point,direction,centers,radius,bounding_rect);
+        
+            remaining_circles.clear();
+            for(int i = 0;i<num;i++){
+       
+                if(bounding_rect.contains(centers.at(i)) && visited.at<uchar>(centers.at(i))==0)
+                    remaining_circles.push_back(centers.at(i));
+            }
+        }
+        
+    }
+      cout <<"remaining"<<remaining_circles.size()<<endl;
+    
+    
 
 
     cout<<"basepoint"<<basePoint<<endl;
     cout <<"direction" <<direction[0]<<" "<<direction[1]<< endl;
-    cout <<"remaining"<<remaining.size()<<endl;
 
    // should bounding all the point in circle
-   Rect b_rect = boundingRect(circle_points);
     Rect final_rect;
-    Rect padding_rect(Point(0,0),visited_clone.size());
-    eat_padding(b_rect,padding_rect,visited_clone,final_rect);
+    Rect padding_rect(Point(0,0),visited.size());
+    eat_padding(bounding_rect,padding_rect,visited_clone,final_rect);
 
   // bounding = final_rect;
    
@@ -85,28 +89,80 @@ void extend_by_circle(Mat& visited, Mat& img,Mat& mask,int direction[], Point ba
     }
     
    //rectangle(img, final_rect,Scalar(255),1,16);
-   imshowResize("visited_clone",visited_clone);
-   imshowResize("XXX",img);
-   waitKey(0);  
+  // rectangle(img, bounding_rect,Scalar(255),1,16);
+  //imshowResize("visited_clone",visited_clone); 
+  //imshowResize("XXX",img);
+   // waitKey(0);  
 
        
 
  //  cout <<"bounding box4 size "<<b_rect4.size()<<endl;
     // here we just think the score is circle_num/total simply
-    int m = params.at(2);
-     int n  = params.at(3); 
-    *score = float(circle_count)/(m*n);
+
+    *score = remaining_circles.size()/(m*n+0.0);
      cout<<"score" << *score<<endl;
+     /*if(*score >=1){
+         rectangle(img, final_rect,Scalar(255),1,16);
+        // rectangle(img, bounding_rect,Scalar(255),1,16);
+        imshowResize("visited_clone",visited_clone); 
+        imshowResize("XXX",img);
+        // waitKey(0);  
+         waitKey(0);
+    }*/
     
      
     
 }
 
-void circle_belong_rect( Rect& rect, double radius, vector<Point>& centers,Mat& img,vector<bool>& belong_rect){
-    // Point p(basePoint.x,basePoint.y+1);
-    /* Point brpoint(tlpoint.x+direction[0], tlpoint.y + direction[1]);//br
 
-    Rect rect(tlpoint,brpoint);*/
+
+void find_bounding_rect(Mat& visited,Mat& img,Mat& mask,Point basepoint,int direction[],vector<Point>& centers,int radius,Rect& bounding_rect){
+    Point p2(basepoint.x+direction[0],basepoint.y + direction[1]);//br point
+     Rect rect(basepoint,p2);
+    Rect whole(Point(0,0),visited.size());
+    rect &= whole;
+    
+    float ratio=0;
+    intersection_rect_mask(rect,mask,&ratio);
+
+    if( ratio<=0.8  ){
+        cout <<"ratio "<<ratio <<" is too small"<<endl;
+        return;
+    }
+    
+   int num = centers.size();
+    vector<bool> belong_rectx(num);
+    circle_belong_rect(rect,radius,centers,img, belong_rectx);
+   
+    
+    vector <Point> remaining;
+    vector<Point> circle_points;
+
+    // the next rect contains less unvisited circle centers than m*n, we also return current point.
+    for (int i = 0; i < num; i++) {
+        //circle(visited,centers.at(i),radius,Scalar(155),1,4,0);
+        if(belong_rectx.at(i)&&visited.at<uchar>(centers.at(i))==0){
+            remaining.push_back(centers.at(i));
+            vector<Point> pts;
+           // points_on_circle(centers.at(i),radius,pts);
+            raster_circle(centers.at(i),radius,pts);
+            circle_points.insert(circle_points.end(),pts.begin(),pts.end());
+        }
+    }
+     
+    if(remaining.empty()){
+        cout <<"no remaining circles"<<endl;
+        return;
+    }
+
+   // should bounding all the point in circle
+   bounding_rect = boundingRect(circle_points);
+}
+
+
+
+void circle_belong_rect( Rect& rect, double radius, vector<Point>& centers,Mat& img,vector<bool>& belong_rect){
+    
     int num = centers.size();
     Point rect_center = 0.5*(rect.br()+rect.tl());
     Point h(abs(rect.tl().x-rect.br().x)/2,abs(rect.tl().y-rect.br().y)/2);// the radius of rect
@@ -257,7 +313,7 @@ void draws_circles(Mat& img, Mat& visited,vector<int> params,vector<Point>& cent
     for (int i = 0; i< circles.size(); i++) {
         Point center(round(circles[i][0]), round(circles[i][1]));
         centers.push_back(center);
-      //  circle(visited,center,ass_radius,Scalar(255,0,0),-1);
+       // circle(visited,center,ass_radius,Scalar(155));
 
     }
 
@@ -336,4 +392,18 @@ void raster_circle(Point center,
         points.push_back(Point(x0 + y, y0 - x));
         points.push_back(Point(x0 + x, y0 - y));
     }
+}
+
+void find_nearest_point(vector<Point>& centers, Point basepoint,Point* nearest_point){
+    int distance = 10000*10000;
+    Point best_point(basepoint);
+    
+    for(int i = 0;i <centers.size();i++){
+        int d = (centers.at(i).x -basepoint.x)*(centers.at(i).x -basepoint.x)+(centers.at(i).y -basepoint.y)*(centers.at(i).y -basepoint.y);
+        if(d<distance){
+            distance = d;
+            best_point = centers.at(i);
+        }
+    }
+     *nearest_point = best_point;
 }

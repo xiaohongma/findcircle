@@ -5,7 +5,7 @@
 #include "utils.h"
 using namespace cv;
 using namespace std;
-void getContour(Mat& input, Mat& mat_for_show, std::vector<cv::Point>& vec_points_max_poly){
+void getPolygon(Mat& input, Mat& mat_for_show, std::vector<cv::Point>& vec_points_max_poly){
 	Mat mat_projection_binary = input;
 	// Mat mat_for_show = Mat(input.size(),CV_8UC3,Scalar(0));
 	// Mat matforshow = mat_projection_jpg;
@@ -16,7 +16,7 @@ void getContour(Mat& input, Mat& mat_for_show, std::vector<cv::Point>& vec_point
 	std::vector<std::vector<cv::Point>> vec_points_polys_phoxi(vec_vec_contours_mask.size());
    
 	std::multimap<int, int, std::greater<int>> multimap_polys_points; //按轮廓尺寸对poly进行排序
-	int n_poly_approx_scale = 30;
+	int n_poly_approx_scale=30;
 	for (int i = 0; i < vec_vec_contours_mask.size(); i++)
 	{
 		RNG rng;

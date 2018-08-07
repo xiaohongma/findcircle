@@ -26,4 +26,7 @@ void points_on_circle(Point center, int radius, vector<Point>& points);
 void raster_circle(Point center,
          int radius, vector<Point>& points);
 void draws_circles(Mat& img,  Mat& visited,vector<int> params,vector<Point>& centers);
+void find_nearest_point(vector<Point>& centers, Point basepoint,Point* nearest_point);
+
+void find_bounding_rect(Mat& visited,Mat& img,Mat& mask,Point basepoint,int direction[],vector<Point>& centers,int radius,Rect& bounding_rect);
 #endif

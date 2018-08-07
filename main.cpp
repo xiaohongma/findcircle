@@ -34,7 +34,7 @@ double angle( Point pt1, Point pt2, Point pt0 );
 //可乐21, 24*9 4*6 农夫11.7 28*10pixel 4*7 315*163.3
 double assume_radius = 21;
 int m =6;//x
-int n =4;//y
+int n =4;//y 
 float width = 194.4;
 float height = 297.8;  
 bool g_bDrawingBox = false;
@@ -78,17 +78,17 @@ int main(int argc, char **argv) {
      waitKey(0);*/
 
     
- // for(int i = 4;i<=40;i++){
+  for(int i = 4;i<=40;i++){
       
-    int i = 4;
+    //int i = 5 ;
     Mat srcImage = imread("kuoluo/"+to_string(i)+"_texture.bmp",0);
     Mat mask = imread("kuoluo/"+to_string(i)+".bmp",0);
     threshold(mask,mask,100,255,THRESH_BINARY);
     Mat roi;
     srcImage.copyTo(roi,mask);
     
-   // imshowResize("xx",roi);
-  //  waitKey(0);
+    imshowResize("the "+to_string(i)+" img",roi);
+    waitKey(0);
    
     vector<int> params;
     params.push_back(round(width));
@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
     int t2 = clock();
    cout <<"time "<< (t2-t)/CLOCKS_PER_SEC<<endl;
     
- // }
+    }
    
     return 0;
 }

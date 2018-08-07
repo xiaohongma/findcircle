@@ -94,8 +94,8 @@ void setVisited(cv::Mat& visited, cv::Mat& img,vector<Point>& visit_points,uchar
      
     //rectangle(img,bounding,Scalar(value,0,0),1,16);
    
-   // imshowResize("xx",img);
-  //  imshowResize("visited",visited);
+    //imshowResize("xx",img);
+    //imshowResize("visited",visited);
    // waitKey(0);
     
 }
@@ -125,18 +125,18 @@ void find_start_point(cv::Mat& visited, cv::Mat& img,cv::Point* point){
 	Mat dist;
 	Mat kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(7, 7));
 	morphologyEx(mat_projection_jpg, dist, cv::MORPH_OPEN, kernel);
-	kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(21, 21));
+	 kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(30, 30));
 	morphologyEx(dist, dist, cv::MORPH_CLOSE, kernel);
-	/*imshowResize("original", mat_projection_jpg);
-	waitKey(1);
-	imshowResize("dist", dist);
+
+	/*imshowResize("dist", dist);
 	waitKey(1);*/
 
 	Mat mat_pro;
 	threshold(dist, mat_pro, 100, 255, THRESH_BINARY);
-	Mat mat_for_show = Mat(mat_projection_jpg.size(), CV_8UC3, Scalar(0));
+    Mat mat_for_show = img.clone();
+	//Mat mat_for_show = Mat(mat_projection_jpg.size(), CV_8UC3, Scalar(0));
 	std::vector<cv::Point> vec_points_max_poly;
-	getContour(mat_pro, mat_for_show, vec_points_max_poly);
+	getPolygon(mat_pro, mat_for_show, vec_points_max_poly);
 	//waitKey(1);
 
 	// 测试
@@ -149,7 +149,10 @@ void find_start_point(cv::Mat& visited, cv::Mat& img,cv::Point* point){
     *point = vec_points_max_poly[vec_n_index.at(0)];
     cout<<"best points numbe"<<*point<<endl;
     cv::circle(mat_for_show,*point, 10, cv::Scalar(255, 125, 125), -1); 
-    imshowResize("contours",mat_for_show);
+     //imshowResize("original",mat_projection_jpg);
+	//imshowResize("contours", dist);
+   // imshowResize("polygon",mat_for_show);
+    //waitKey(0);
 
 	/*for (auto n_index : vec_n_index) 
 	{

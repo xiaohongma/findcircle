@@ -6,7 +6,7 @@
 #include <opencv2/opencv.hpp>
 using namespace cv;
 using namespace std;
-void getContour(Mat& input, Mat& mat_for_show, std::vector<cv::Point>& vec_points_max_poly);
+void getPolygon(Mat& input, Mat& mat_for_show, std::vector<cv::Point>& vec_points_max_poly);
 
 std::vector<int> get_recommended_point_index_to_dfs(
 	const std::vector<cv::Point> &vec_point_poly_,
