@@ -4,7 +4,7 @@
 using namespace std;
 using namespace cv;
 
-enum{
+enum FEATURE{
    FEATURE_USE_CIRCLE = 0,
    FEATURE_USE_CONTOUR = 1,
    FEATURE_USE_TEXTURE =2
@@ -50,7 +50,31 @@ void AdaptiveFindThreshold(const CvArr* image, double* low, double* high, int ap
 * @return double
 */
 int sng(double x);
+/**
+* @brief convert float to string, output given precision.
+* 
+* @param number p_number:...
+* @param n p_n:...
+* @return std::__cxx11::string
+*/
+string floatToString(float number, int n);
+/**
+* @brief rotate img according to give angle
+* 
+* @param read_path p_read_path:...
+* @param out_path p_out_path:...
+* @param angle p_angle:...
+* @return int
+*/
 int rotateImg(cv::String read_path,cv::String out_path,float angle);
+/**
+* @brief draw rotated rect
+* 
+* @param img p_img:...
+* @param rr p_rr:...
+* @param color p_color:...
+*/
+void DrawRotatedRect(cv::Mat& img, cv::RotatedRect& rr, cv::Scalar color);
 #endif
 
 

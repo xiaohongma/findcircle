@@ -64,7 +64,7 @@ template <typename T>  bool isEnd( cv::Mat& visited, std::vector<int>& params, s
     }
 
     if(count<m*n*0.5){
-        cout<<"unvisited areaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  "<<count << endl;
+        cout<<"remaining units "<<count << endl;
         isend = true;
     }
 
@@ -83,7 +83,14 @@ void findtl(cv::Mat& visited, cv::Mat& img,cv::Point* point);
 */
 bool isContinue(float score);
 
-void intersection_rect_mask(cv::Rect& rect, cv::Mat& mask, float* ratio);
+/**
+* @brief this function is used to find the start point to segment. First we extract do mophology process in the mask( open), then we get the contours of mask. There are still many small contours, we just fill them and reserve the main contours. Then, we use mophology close operator to enlarge the reserved contour.Notice that the struct size is much smaller in open operator than in close operator. Then, we use getPolygon function to get polygons of corresponding contours and return the biggest polygon. The best start point in the polygon should consider following conditions: 1. the angle is near 90. 2. is the convex point. 3. both of the two side have proper length.
+* 
+* @param visited p_visited:...
+* @param img p_img:...
+* @param params p_params:...
+* @param key_pts p_key_pts:...
+*/
 void find_start_point( cv::Mat& visited, cv::Mat& img, std::vector<int>& params,vector<Point>& key_pts);
 void get_rotated_rect(Mat& img,vector<Point> key_pts,int direction[], RotatedRect& ro_rect);
 
@@ -91,14 +98,11 @@ void get_rotated_rect(Mat& img,vector<Point> key_pts,int direction[], RotatedRec
 
 template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int direction[8][2], int feature,vector<T>& units, std::vector<int>& params, std::vector<StepInfo>& path, std::vector<PathInfo>& allpaths)
 {
-     // all of circle have been setted to flase
-    //int num = abs(direction[0][1])*abs(direction[0][0]);
+
     if (isEnd(visited,params,units)) {
-        //(*count_segmentation)++;
         PathInfo pathInfo;
         pathInfo.path=path;
-        pathInfo.tag = 123;
-        
+        pathInfo.tag = 0000;//unused tag
         allpaths.push_back(pathInfo);
         return;
     }

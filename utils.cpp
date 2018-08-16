@@ -12,6 +12,13 @@ void imshowResize(const cv::String& winname, const cv::Mat& img)
     imshow(winname, img);
 }
 
+string floatToString(float number, int n){
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(n) << number;
+    std::string mystring = ss.str();
+    return mystring;
+}
+
  void AdaptiveFindThreshold(const CvArr* image, double* low, double* high, int aperture_size )
 {
     cv::Mat src = cv::cvarrToMat(image);
@@ -140,12 +147,17 @@ int rotateImg(cv::String read_path,cv::String out_path,float angle){
  	cvGetQuadrangleSubPix( des, des_rot, &M);
 	//cvNamedWindow( "dst", 1 );
     cv::Mat mat = cv::cvarrToMat(des_rot);
-	/*cvShowImage("dst",des_rot);
-	cvReleaseImage(&src);
-	cvReleaseImage(&des);
-	cvReleaseImage(&des_rot);*/
     imwrite(out_path,mat);
     imshowResize("rotated img",mat);
 	waitKey(0);
 	return 0;
+}
+void DrawRotatedRect(cv::Mat& img, cv::RotatedRect& rr, cv::Scalar color)
+{
+    cv::Point2f pts[4];
+    rr.points(pts);
+    for (int i = 0; i < 4; i++)
+    {
+        cv::line(img, pts[i], pts[(i + 1) % 4], color, 4);
+    }
 }

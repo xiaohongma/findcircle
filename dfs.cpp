@@ -44,33 +44,27 @@ void setVisited(cv::Mat& visited, cv::Mat& img,vector<Point>& visit_points,uchar
 
 
 void find_start_point(cv::Mat& visited, cv::Mat& img,std::vector<int>& params,vector<Point>& key_pts){
-    
-    
    
     Mat mask = ~visited;
-    
+    // open process on mask 
     Mat opened_mask;
-    //cv::MorphShapes::MORPH_CROSS;
     Mat kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(params.at(PARAM_OPEN_SCALE_LOC), params.at(PARAM_OPEN_SCALE_LOC)));
 	morphologyEx(mask, opened_mask, cv::MORPH_OPEN, kernel);
    // imshowResize("after open",opened_mask);
    // waitKey(0);
-    
-    
-    cout<< "open size "<<Size(params.at(PARAM_OPEN_SCALE_LOC), params.at(PARAM_OPEN_SCALE_LOC))<<endl;
-    cout<< "open size "<<Size(params.at(PARAM_CLOSE_SCALE_LOC), params.at(PARAM_CLOSE_SCALE_LOC))<<endl;
-    
+    //binary input img
     Mat mat_pro;
 	threshold(opened_mask, mat_pro, 100, 255, THRESH_BINARY);
+    // find contours
     std::vector<cv::Vec4i> vec_hierarchy_mask;
 	std::vector<std::vector<cv::Point>> vec_vec_contours_mask;
     cv::findContours(mat_pro, vec_vec_contours_mask, vec_hierarchy_mask, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    // fill up the small contours.(the area less than 0.1*box_area)
     double thres = params.at(PARAM_HEIGHT_LOC)*params.at(PARAMS::PARAM_WIDTH_LOC)*0.1;
     for(int i =0;i<vec_vec_contours_mask.size();i++){
         vector<Point> ctr = vec_vec_contours_mask.at(i);
         if(contourArea(ctr)<thres){
-        //fillPoly(mat_pro,ctr,Scalar(0));
-        cout <<"Area "<<contourArea(ctr)<<endl;
+       // cout <<"Area "<<contourArea(ctr)<<endl;
         drawContours(mat_pro, vec_vec_contours_mask, i, Scalar(0), -1, 8, vector<Vec4i>(), 0, Point());
         }
     }
@@ -78,7 +72,7 @@ void find_start_point(cv::Mat& visited, cv::Mat& img,std::vector<int>& params,ve
    // waitKey(0);
     cout<<" find "<<vec_vec_contours_mask.size()<<" contours"<<endl;
 
-
+    //close the mask map 
     Mat closed_mask;
     kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(params.at(PARAM_CLOSE_SCALE_LOC), params.at(PARAM_CLOSE_SCALE_LOC)));
 	morphologyEx(mat_pro, closed_mask, cv::MORPH_CLOSE, kernel);
@@ -86,10 +80,11 @@ void find_start_point(cv::Mat& visited, cv::Mat& img,std::vector<int>& params,ve
     //waitKey(0);
     //Mat mat_for_show = Mat(img.size(), CV_8UC3, Scalar(0));
     Mat mat_for_show = img.clone();
+    // return the biggest polygon
 	std::vector<cv::Point> vec_points_max_poly;
 	getPolygon(closed_mask, mat_for_show,params, vec_points_max_poly);
 
-	// 测试
+	// find the best point and its two neighbor points in polygon
 	if (!is_counterclockwise(vec_points_max_poly)) 
 	{
 		std::reverse(vec_points_max_poly.begin(), vec_points_max_poly.end());
