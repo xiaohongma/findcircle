@@ -272,6 +272,7 @@ CMakeFiles/findcircle.dir/dfs.cpp.o: /usr/local/include/opencv2/viz/widgets.hpp
 CMakeFiles/findcircle.dir/feature_circle.cpp.o: ../dfs.h
 CMakeFiles/findcircle.dir/feature_circle.cpp.o: ../feature_circle.cpp
 CMakeFiles/findcircle.dir/feature_circle.cpp.o: ../feature_circle.h
+CMakeFiles/findcircle.dir/feature_circle.cpp.o: ../polygon_calculation.hpp
 CMakeFiles/findcircle.dir/feature_circle.cpp.o: ../utils.h
 CMakeFiles/findcircle.dir/feature_circle.cpp.o: /usr/local/include/opencv/cxcore.h
 CMakeFiles/findcircle.dir/feature_circle.cpp.o: /usr/local/include/opencv2/calib3d.hpp
@@ -545,6 +546,7 @@ CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/core.hpp
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/core/affine.hpp
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/core/base.hpp
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/core/bufferpool.hpp
+CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/core/core.hpp
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/core/core_c.h
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/core/cuda.hpp
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/core/cuda.inl.hpp
@@ -606,6 +608,7 @@ CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/flann/sampling.
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/flann/saving.h
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/flann/timer.h
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/highgui.hpp
+CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/highgui/highgui.hpp
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/highgui/highgui_c.h
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/imgcodecs.hpp
 CMakeFiles/findcircle.dir/main.cpp.o: /usr/local/include/opencv2/imgcodecs/imgcodecs_c.h

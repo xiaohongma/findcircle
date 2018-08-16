@@ -1,4 +1,4 @@
-#ifndef DFS
+ #ifndef DFS
 #define DFS
 #include <vector>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -32,7 +32,8 @@ template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int
  @param img roi image, in case we need breakpoint or debug
  @param score return the score in this step.
  */
-template <typename T> void extendAdjustRect(cv::Mat& visited, cv::Mat& img, cv::Mat& mask, int direction[], cv::Point basePoint,int feature,vector<T>& units,std::vector< int >& params, float* score,vector<Point>& visit_points);
+
+template<typename T>void extendAdjustRect(cv::Mat& visited, cv::Mat& img, cv::Mat& mask, vector<Point>& key_pts, int direction[], int feature, std::vector< T >& units, std::vector< int >& params, float* score, std::vector< cv::Point >& visit_points, RotatedRect& bounding_r_rect); 
 
 
 /**
@@ -83,7 +84,8 @@ void findtl(cv::Mat& visited, cv::Mat& img,cv::Point* point);
 bool isContinue(float score);
 
 void intersection_rect_mask(cv::Rect& rect, cv::Mat& mask, float* ratio);
-void find_start_point( cv::Mat& visited, cv::Mat& img, cv::Point* point);
+void find_start_point( cv::Mat& visited, cv::Mat& img, std::vector<int>& params,vector<Point>& key_pts);
+void get_rotated_rect(Mat& img,vector<Point> key_pts,int direction[], RotatedRect& ro_rect);
 
 
 
@@ -100,16 +102,17 @@ template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int
         allpaths.push_back(pathInfo);
         return;
     }
-    Point point(-1,-1);// top left point
-   // findtl(visited,img,&point); 
-    find_start_point(visited,img,&point);
-    if(point.x==-1 && point.y==-1) return;
+    vector<Point> key_pts;
+    // find key_pts in polygon
+    find_start_point(visited,img,params,key_pts);
+    
+    if(key_pts.empty()) return;
 
-    for (int i = 0; i<8; i++) {
+    for (int i = 0; i<2; i++) {
          float score=0;
          vector<Point> visit_points;
-        //if have not visited
-        extendAdjustRect(visited,img,mask,direction[i],point,feature,units, params,&score,visit_points);
+         RotatedRect final_r_rect;
+        extendAdjustRect(visited,img,mask,key_pts,direction[i],feature,units, params,&score,visit_points,final_r_rect);
         //如果周围可以有邻接矩形
         if(isContinue(score)) {
             StepInfo step;
@@ -118,7 +121,7 @@ template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int
            setVisited(visited,img,visit_points,255);
           // cout <<"visited direction" <<i<<" visited bl"<<point<<endl;
            step.direction = i;
-           step.p = point;
+           step.r_rect =final_r_rect;
            step.score = score;
            path.push_back(step);
            dfs(visited,img,mask,direction,feature,units,params,path,allpaths);
@@ -132,11 +135,11 @@ template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int
 }
 
 
-template<typename T>void extendAdjustRect(cv::Mat& visited, cv::Mat& img, cv::Mat& mask, int direction[], cv::Point basePoint, int feature, std::vector< T >& units, std::vector< int >& params, float* score, std::vector< cv::Point >& visit_points)
+template<typename T>void extendAdjustRect(cv::Mat& visited, cv::Mat& img, cv::Mat& mask, vector<Point>& key_pts, int direction[], int feature, std::vector< T >& units, std::vector< int >& params, float* score, std::vector< cv::Point >& visit_points, RotatedRect& bounding_r_rect)
 {
     switch(feature){
         case FEATURE_USE_CIRCLE:
-             extend_by_circle(visited,img,mask,direction,basePoint,params,units,score,visit_points);
+             extend_by_circle(visited,img,mask,key_pts,direction,params,units,score,visit_points,bounding_r_rect);
             break;
         case FEATURE_USE_CONTOUR:
             //score_by_contour(visited,img,direction,basePoint,params,score);

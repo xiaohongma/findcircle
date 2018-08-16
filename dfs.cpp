@@ -7,26 +7,7 @@
 using namespace std;
 
 
-void findtl(cv::Mat& visited, cv::Mat& img,cv::Point* point)
-{
-    int distance = visited.rows*visited.rows+visited.cols*visited.cols;
-    Point tlpoint(visited.cols,visited.rows);
-    for(int y  =0; y<visited.rows;y++){
-        uchar* row = visited.ptr<uchar>(y);
-        for(int x = 0;x<visited.cols;x++){
-            if(row[x]==0){
-                int d = x*x+y*y;
-                if(d<distance){
-                    distance = d;
-                    tlpoint = Point(x,y);
-                   // break;
-                }
-             }
-        }
-    }
-     *point = tlpoint;
-    
-}
+
 
 // decide whether or not to continue dfs, waiting for improvement
 bool isContinue(float score){
@@ -41,29 +22,6 @@ bool isContinue(float score){
 
 
 
-/*bool isEnd(cv::Mat& visited, std::vector< int > params)
-{
-
-    bool isend = false;
-    int width = params.at(0);
-    int height = params.at(1);
-    int count = 0;
-    for(int i = 0;i<visited.rows;i++){
-        uchar* row = visited.ptr<uchar>(i);
-        for(int j = 0;j<visited.cols;j++){
-            if(row[j]==0) count++;
-        }
-    }
-   
-    if(count<width*height){
-        cout<<"unvisited area"<<count << endl;
-        isend = true;
-    }
-
-    return isend;
-}*/
-
-
 
 void setVisited(cv::Mat& visited, cv::Mat& img,vector<Point>& visit_points,uchar value)
 {
@@ -73,23 +31,7 @@ void setVisited(cv::Mat& visited, cv::Mat& img,vector<Point>& visit_points,uchar
         visited.at<uchar>(visit_points.at(i))=value;
     }
      
-    /*
-    int i = 0;
-    while(true){
-        fstream file;
-        file.open("contour_"+to_string(i)+".jpg",ios_base::in);
-        if(!file){
-            imwrite("contour_"+to_string(i)+".jpg",visited);
-            break;
-        }else{
-            i++;
-        }
-    }
-    */
     
-
-
-
     // visited(bounding) = value;
      
     //rectangle(img,bounding,Scalar(value,0,0),1,16);
@@ -100,74 +42,123 @@ void setVisited(cv::Mat& visited, cv::Mat& img,vector<Point>& visit_points,uchar
     
 }
 
-void intersection_rect_mask(cv::Rect& rect, cv::Mat& mask, float* ratio)
-{
-    int x0 = rect.tl().x;
-    int y0 = rect.tl().y;
-    int x_end = rect.br().x;
-    int y_end = rect.br().y;
+
+void find_start_point(cv::Mat& visited, cv::Mat& img,std::vector<int>& params,vector<Point>& key_pts){
     
-    int count = 0;
-    for(int x = x0;x<x_end;x++){
-        for(int y = y0;y<y_end;y++){
-            if(mask.at<uchar>(Point(x,y))==255)
-                count++;
+    
+   
+    Mat mask = ~visited;
+    
+    Mat opened_mask;
+    //cv::MorphShapes::MORPH_CROSS;
+    Mat kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(params.at(PARAM_OPEN_SCALE_LOC), params.at(PARAM_OPEN_SCALE_LOC)));
+	morphologyEx(mask, opened_mask, cv::MORPH_OPEN, kernel);
+   // imshowResize("after open",opened_mask);
+   // waitKey(0);
+    
+    
+    cout<< "open size "<<Size(params.at(PARAM_OPEN_SCALE_LOC), params.at(PARAM_OPEN_SCALE_LOC))<<endl;
+    cout<< "open size "<<Size(params.at(PARAM_CLOSE_SCALE_LOC), params.at(PARAM_CLOSE_SCALE_LOC))<<endl;
+    
+    Mat mat_pro;
+	threshold(opened_mask, mat_pro, 100, 255, THRESH_BINARY);
+    std::vector<cv::Vec4i> vec_hierarchy_mask;
+	std::vector<std::vector<cv::Point>> vec_vec_contours_mask;
+    cv::findContours(mat_pro, vec_vec_contours_mask, vec_hierarchy_mask, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    double thres = params.at(PARAM_HEIGHT_LOC)*params.at(PARAMS::PARAM_WIDTH_LOC)*0.1;
+    for(int i =0;i<vec_vec_contours_mask.size();i++){
+        vector<Point> ctr = vec_vec_contours_mask.at(i);
+        if(contourArea(ctr)<thres){
+        //fillPoly(mat_pro,ctr,Scalar(0));
+        cout <<"Area "<<contourArea(ctr)<<endl;
+        drawContours(mat_pro, vec_vec_contours_mask, i, Scalar(0), -1, 8, vector<Vec4i>(), 0, Point());
         }
     }
-    *ratio = (float)count/(rect.width*rect.height);
-    cout <<"ratio" <<*ratio<<endl;
-    
-}
+    //imshowResize("filled small contours",mat_pro);
+   // waitKey(0);
+    cout<<" find "<<vec_vec_contours_mask.size()<<" contours"<<endl;
 
-void find_start_point(cv::Mat& visited, cv::Mat& img,cv::Point* point){
-   
-    Mat mat_projection_jpg = ~visited;
-	Mat dist;
-	Mat kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(7, 7));
-	morphologyEx(mat_projection_jpg, dist, cv::MORPH_OPEN, kernel);
-	 kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(30, 30));
-	morphologyEx(dist, dist, cv::MORPH_CLOSE, kernel);
 
-	/*imshowResize("dist", dist);
-	waitKey(1);*/
-
-	Mat mat_pro;
-	threshold(dist, mat_pro, 100, 255, THRESH_BINARY);
+    Mat closed_mask;
+    kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(params.at(PARAM_CLOSE_SCALE_LOC), params.at(PARAM_CLOSE_SCALE_LOC)));
+	morphologyEx(mat_pro, closed_mask, cv::MORPH_CLOSE, kernel);
+    //imshowResize("after close",closed_mask);
+    //waitKey(0);
+    //Mat mat_for_show = Mat(img.size(), CV_8UC3, Scalar(0));
     Mat mat_for_show = img.clone();
-	//Mat mat_for_show = Mat(mat_projection_jpg.size(), CV_8UC3, Scalar(0));
 	std::vector<cv::Point> vec_points_max_poly;
-	getPolygon(mat_pro, mat_for_show, vec_points_max_poly);
-	//waitKey(1);
+	getPolygon(closed_mask, mat_for_show,params, vec_points_max_poly);
 
 	// 测试
 	if (!is_counterclockwise(vec_points_max_poly)) 
 	{
 		std::reverse(vec_points_max_poly.begin(), vec_points_max_poly.end());
 	}
-	auto vec_n_index = get_recommended_point_index_to_dfs(vec_points_max_poly);
-    if(vec_n_index.empty()) return;
-    *point = vec_points_max_poly[vec_n_index.at(0)];
-    cout<<"best points numbe"<<*point<<endl;
-    cv::circle(mat_for_show,*point, 10, cv::Scalar(255, 125, 125), -1); 
-     //imshowResize("original",mat_projection_jpg);
-	//imshowResize("contours", dist);
-   // imshowResize("polygon",mat_for_show);
-    //waitKey(0);
+	int max_len = round(1.2*max(params.at(PARAM_WIDTH_LOC),params.at(PARAM_HEIGHT_LOC)));
+	auto vec_n_index = get_recommended_point_index_to_dfs(vec_points_max_poly,max_len);
+    if(vec_n_index.empty()) 
+    {
+        cout<<"no recommendation point"<<endl;
+        return;
+        
+    }
+    Point best_point = vec_points_max_poly[vec_n_index.at(0)];
+    int next_index = (vec_n_index.at(0)<(vec_points_max_poly.size()-1))?(vec_n_index.at(0)+1):0;
+    int pre_index = (vec_n_index.at(0)>0)?(vec_n_index.at(0)-1):(vec_points_max_poly.size()-1);
+    Point pre_point = vec_points_max_poly.at(pre_index);
+    Point next_point = vec_points_max_poly.at(next_index);
+    key_pts.push_back(best_point);
+    key_pts.push_back(pre_point);
+    key_pts.push_back(next_point);
+    
+    /*circle(mat_for_show,best_point,10,Scalar(255),-1);
+    imshowResize("polygon",mat_for_show);
+    waitKey(0);*/
 
-	/*for (auto n_index : vec_n_index) 
-	{
-		cv::circle(mat_for_show, vec_points_max_poly[n_index], 10, cv::Scalar(255, 125, 125), -1);
-		cv::namedWindow("test", cv::WINDOW_FREERATIO);
-		imshowResize("test", mat_for_show);
-		cv::waitKey(0); // ms
-	}
-	cv::namedWindow("test", cv::WINDOW_FREERATIO);
-	imshowResize("test", mat_for_show);
-	cv::waitKey(0); // ms
-    */
 }
 
+void get_rotated_rect(Mat& img,vector<Point> key_pts, int direction[],RotatedRect& ro_rect){
+    int width = direction[0];
+    int height = direction[1];
+    
+    Vec2f v1(key_pts.at(1).x-key_pts.at(0).x,key_pts.at(1).y-key_pts.at(0).y);
+    Vec2f v2(key_pts.at(2).x-key_pts.at(0).x,key_pts.at(2).y-key_pts.at(0).y);
+    
+     float angle1 = acos(v1.dot(Vec2f(1,0))/(get_module(v1)))*180/CV_PI*sng(get_cross_product(Vec2f(1,0),v1));
+     float angle2 = acos(v2.dot(Vec2f(1,0))/(get_module(v2)))*180/CV_PI*sng(get_cross_product(Vec2f(1,0),v2));
 
+    cout<<"angle1 "<<angle1<<" angle2 "<<angle2<<endl;
+   
+   float angle12 = acos(v1.dot(v2)/(get_module(v1)*get_module(v2)))*180/CV_PI;
+   float bias = 0.5*(angle12-90)*sng(get_cross_product(v1,v2));
+    cout <<"bias "<< bias << endl;
+   angle1 = angle1+bias;
+   angle2 = angle2-bias;
+    v1 = v1*width/sqrt(v1.dot(v1));
+    v2 = v2*height/sqrt(v2.dot(v2));
+    Point center (0.5*(v1+v2)(0)+key_pts.at(0).x,0.5*(v1+v2)(1)+key_pts.at(0).y);
+   // RotatedRect rr(center,Size2f(width,height),angle1);
+    RotatedRect rr(center,Size2f(width,height),angle1);
+    cout<<"after bais angle1 "<<angle1<<" angle2 "<<angle2<<endl;
+    cout <<"rotated angle"<<rr.angle<<" width "<<rr.size.width<<endl;
+    ro_rect = rr;
+    
+   /* //Mat mat_for_show = img.clone();
+   Mat mat_for_show = Mat(img.size(), CV_8UC3, Scalar(0));
+  //  circle(mat_for_show,center,10,Scalar(255));
+    DrawRotatedRect(mat_for_show,rr,Scalar(255));
+    line(mat_for_show,key_pts[0],key_pts[1],Scalar(255));
+    line(mat_for_show,key_pts[0],key_pts[2],Scalar(255));
+//
+     
+    cout<<"best points numbe"<<key_pts.at(0)<<endl;
+    cv::circle(mat_for_show,key_pts.at(0), 10, cv::Scalar(255, 125, 125), -1); 
+    cv::circle(mat_for_show,key_pts.at(1), 10, cv::Scalar(255, 125, 125), -1); 
+    cv::circle(mat_for_show,key_pts.at(2), 10, cv::Scalar(255, 125, 125), -1); 
+    putText(mat_for_show,to_string(1),key_pts.at(1),FONT_HERSHEY_SCRIPT_SIMPLEX,4,Scalar(255),4);
+    imshowResize("key_pts",mat_for_show);
+    waitKey(0);*/
+}
 
 
 

@@ -5,19 +5,25 @@ using namespace std;
 using namespace cv;
 
 enum{
-    USE_DFS = 10,
-    USE_BFS =11,
-    USE_Dij = 12
-};
-enum{
    FEATURE_USE_CIRCLE = 0,
    FEATURE_USE_CONTOUR = 1,
    FEATURE_USE_TEXTURE =2
+};
+enum PARAMS{
+    PARAM_WIDTH_LOC =0,
+    PARAM_HEIGHT_LOC = 1,
+    PARAM_M_LOC =2,
+    PARAM_N__LOC  =3,
+    PARAM_RADIUS_LOC  =4,
+    PARAM_OPEN_SCALE_LOC = 5,
+    PARAM_CLOSE_SCALE_LOC =6,
+    PARAM_POLY_APPROX_SCALE_LOC  =7
 };
 
 struct StepInfo{
     Point p;//the keypoint of search step. we think it is the bottom left concern of the rectangle.
     int direction;//search direction
+    RotatedRect r_rect;
     float score;
 };
 struct PathInfo{
@@ -30,13 +36,7 @@ struct PathInfo{
  you can also change the value according to your display, or replace it with an auto resize method.
  */
 void imshowResize(const String& winname, const Mat& img);
-/**
- * estimate distance between circles
-  @param centers is the detected circle centers
-  @param mean_object_dist return the mean distance of two neighbor circles
-  @param angle return the angle of minarea adjusting rect
- */
-void estimateCenterDistance(vector< Point > centers,double* mean_object_dist, double* angle);
+
 /**
  * this two methods are used to adaptive canny edge detection.
  */
@@ -50,7 +50,7 @@ void AdaptiveFindThreshold(const CvArr* image, double* low, double* high, int ap
 * @return double
 */
 int sng(double x);
-
+int rotateImg(cv::String read_path,cv::String out_path,float angle);
 #endif
 
 

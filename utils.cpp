@@ -11,98 +11,6 @@ void imshowResize(const cv::String& winname, const cv::Mat& img)
     cvResizeWindow(winname.c_str(), 700,700);
     imshow(winname, img);
 }
-// size at least 2*2
- void estimateCenterDistance(vector< Point > centers, double* mean_object_dist, double* angle)
-{
-    RotatedRect rect = minAreaRect(centers);
-    *angle = rect.angle;
-    //cout << "angle"<< rect.angle <<endl;
-    //取外接矩形四个定点处的n*n个圆，计算圆心距。
-    Point2f vertices[4];
-    rect.points(vertices);
-    //vector<double> dist1(centers.size());
-    //double min;
-    // int index;
-    Point2f corner_4[4];//距离外接矩形四个顶点最近的圆心
-    int num = centers.size();
-    for (int i = 0; i < 4; i++) {
-        double  min_dist = 1000000;
-        int  index = 0;
-        double dist1 = 0;
-        for(int j = 0; j< num; j++) {
-            Point a = centers.at(j);
-            //cout << (a.x -vertices[i].x)*(a.x -vertices[i].x) +(a.y -vertices[i].y)*(a.y -vertices[i].y)<<endl;
-            dist1 = (a.x -vertices[i].x)*(a.x -vertices[i].x) +(a.y -vertices[i].y)*(a.y -vertices[i].y);
-            //dist[j] = (centers[j][0]-vertices[i][0])^2 +(centers[j][1]-vertices[i][1])^2;
-            if(dist1<min_dist) {
-                min_dist = dist1;
-                index = j;
-            }
-        }
-        corner_4[i] = centers[index];
-        //centers.clear();
-        // circle(img,corner_4[i], 5,Scalar(155,50,255),-1,4,0);
-        //line(img, vertices[i], vertices[(i+1)%4], Scalar(255));
-    }
-    
-
- 
-    vector<Point> selected_object;//角点附近的圆心
-    vector<double> object_dist; //圆心距离
-    //  double object_space[2];
-
-    for (int i = 0; i < 4; i++) {
-        //double  min_dist = 1000000;
-       // int  index = 0;
-        double dist1[num];
-        //int num = 2;
-        // while(1){
-        for(int j = 0; j< num; j++) {
-            Point a = centers.at(j);
-
-            dist1[j] = (a.x -corner_4[i].x)*(a.x -corner_4[i].x) +(a.y -corner_4[i].y)*(a.y -corner_4[i].y);
-          //  if(dist1 ==0) continue;
-
-        //   if(dist1<min_dist) {
-         //       min_dist = dist1;
-          //      index = j;
-          //  }
-        }
-        sort(dist1,dist1+num);
-        
-        // depend on whether the object is more than 3*3 or not 
-        if(num>=9){
-         object_dist.push_back(sqrt(dist1[1]));
-         object_dist.push_back(sqrt(dist1[2]));
-         object_dist.push_back(sqrt(dist1[4])/2);
-         object_dist.push_back(sqrt(dist1[5])/2);
-        } else{
-          object_dist.push_back(sqrt(dist1[1]));
-          object_dist.push_back(sqrt(dist1[2]));
-        }
-        // circle(img,selected_object[i], 5,Scalar(155,50,255),-1,4,0);
-        // for(int m = 0; m <num ;m++)
-        // cout << "dist " <<sqrt(dist1[m])<< endl;
-
-        
-
-    }
-    sort(object_dist.begin(),object_dist.end());
-   // for(int i = 0; i <object_dist.size();i++){
-    //    cout << "dist " << object_dist.at(i)<< endl;
-   // }
-
-    //average of center dist,exclude the maximun and minimun
-    *mean_object_dist = accumulate(object_dist.begin()+1,object_dist.end()-1, 0.0)/(object_dist.size()-2);
-   // double  xmean_object_dist = accumulate(object_dist.begin(),object_dist.end(), 0.0)/object_dist.size();
-    cout << "mean_object_dist"<<*mean_object_dist<< endl;
-   // cout << "xmean_object_dist"<<xmean_object_dist<< endl;
-
-    //calculate the top right point of sub-box
-   // *bl = Point(corner_4[0].x, corner_4[0].y);
-
-
-}
 
  void AdaptiveFindThreshold(const CvArr* image, double* low, double* high, int aperture_size )
 {
@@ -183,3 +91,61 @@ int sng(double x) {
     return (x <0)? -1 : (x> 0);
 }
 
+
+
+int rotateImg(cv::String read_path,cv::String out_path,float angle){
+ 
+  IplImage* src= cvLoadImage(read_path.c_str(),1);
+	//cvNamedWindow( "src", 1 );
+     cv::Mat mat1 = cv::cvarrToMat(src);
+	imshowResize(" src img",mat1);
+	float anglerad=CV_PI*angle/180.0;
+    //输入图像的大小
+	int w = src->width;
+	int h = src->height;
+	//旋转后图像的大小
+	int w_dst = int(fabs(h*sin(anglerad))+fabs(w*cos(anglerad)));
+	int h_dst = int(fabs(w * sin(anglerad)) +fabs(h * cos(anglerad)));
+	CvSize rect;
+	rect.height=h_dst;
+	rect.width=w_dst;
+	//中间变量
+	IplImage *des=cvCreateImage(rect,src->depth,src->nChannels);
+	//旋转后的图像
+	IplImage *des_rot=cvCreateImage(rect,src->depth,src->nChannels);
+	//用0填充
+	//cvFillImage(des,0);
+    cvSet(des,0);
+
+	//设置roi区域，将原图copy到roi区域
+	CvRect roi;
+	roi.x=(w_dst-w)/2;
+	roi.y=(h_dst-h)/2;
+	roi.height=h;
+	roi.width=w;
+	cvSetImageROI(des,roi);
+	cvCopy(src,des,NULL);
+	cvResetImageROI(des);
+ 	//旋转矩阵
+	float m[6];
+ 	CvMat M = cvMat( 2, 3, CV_32F, m );
+ 
+ 	m[0] = (float)cos(-anglerad);
+ 	m[1] = (float)sin(-anglerad);
+ 	m[3] = -m[1];
+ 	m[4] = m[0];
+ 	// 将旋转中心移至图像中间
+ 	m[2] = w_dst*0.5f;  
+ 	m[5] = h_dst*0.5f;  
+ 	cvGetQuadrangleSubPix( des, des_rot, &M);
+	//cvNamedWindow( "dst", 1 );
+    cv::Mat mat = cv::cvarrToMat(des_rot);
+	/*cvShowImage("dst",des_rot);
+	cvReleaseImage(&src);
+	cvReleaseImage(&des);
+	cvReleaseImage(&des_rot);*/
+    imwrite(out_path,mat);
+    imshowResize("rotated img",mat);
+	waitKey(0);
+	return 0;
+}

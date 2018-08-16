@@ -13,8 +13,8 @@ using namespace cv;
 * @param params p_params: you can see the description in the reference fucntion
 * @param score p_score: return score
 */
-void extend_by_circle(cv::Mat& visited, cv::Mat& img, cv::Mat& mask, int direction[], cv::Point basePoint, std::vector< int >& params, std::vector< cv::Point >& centers, float* score, std::vector< cv::Point >& visit_points);
-void circle_belong_rect( Point tlpoint, int direction[], double radius, vector<Point>& centers,Mat& img,vector<bool>& belong_rect);
+void extend_by_circle(Mat& visited, Mat& img,Mat& mask,vector<Point> key_pts, int direction[], vector<int>& params,vector<Point>& centers,float* score,vector<Point>& visit_points, RotatedRect& bounding_r_rect);
+void circle_belong_rect( RotatedRect& rect, double radius, vector<Point>& centers,Mat& img,vector<bool>& belong_rect);
 
 void circle_belong_rect( Rect& rect, double radius, vector<Point>& centers,Mat& img,vector<bool>& belong_rect);
 
@@ -28,5 +28,10 @@ void raster_circle(Point center,
 void draws_circles(Mat& img,  Mat& visited,vector<int> params,vector<Point>& centers);
 void find_nearest_point(vector<Point>& centers, Point basepoint,Point* nearest_point);
 
-void find_bounding_rect(Mat& visited,Mat& img,Mat& mask,Point basepoint,int direction[],vector<Point>& centers,int radius,Rect& bounding_rect);
+void find_bounding_rect(Mat& visited,Mat& img,RotatedRect& r_rect,vector<Point>& centers,int radius,RotatedRect& bounding_rect,vector<Point>& remaining_circles);
+
+void rotate_rect_contains( RotatedRect& rect, vector<Point>& centers,vector<bool>& belong_rect);
+void count_points_in_rotated_rect(RotatedRect& rotated_rect,vector<Point>& rotated_rect_points);
+void DrawRotatedRect(cv::Mat& img, cv::RotatedRect& rr, cv::Scalar color);
+void rotateImage(Mat& src,RotatedRect r_rect, Mat& dst);
 #endif

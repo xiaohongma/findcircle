@@ -5,18 +5,19 @@
 #include "utils.h"
 using namespace cv;
 using namespace std;
-void getPolygon(Mat& input, Mat& mat_for_show, std::vector<cv::Point>& vec_points_max_poly){
+void getPolygon(Mat& input, Mat& mat_for_show, std::vector<int>& params,std::vector<cv::Point>& vec_points_max_poly){
 	Mat mat_projection_binary = input;
 	// Mat mat_for_show = Mat(input.size(),CV_8UC3,Scalar(0));
 	// Mat matforshow = mat_projection_jpg;
 	std::vector<cv::Vec4i> vec_hierarchy_mask;
 	std::vector<std::vector<cv::Point>> vec_vec_contours_mask;
 	cv::findContours(mat_projection_binary, vec_vec_contours_mask, vec_hierarchy_mask, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    if(vec_hierarchy_mask.empty()) return;
 	//提取轮廓的最小外接多边形
 	std::vector<std::vector<cv::Point>> vec_points_polys_phoxi(vec_vec_contours_mask.size());
    
 	std::multimap<int, int, std::greater<int>> multimap_polys_points; //按轮廓尺寸对poly进行排序
-	int n_poly_approx_scale=30;
+	int n_poly_approx_scale=params.at(PARAM_POLY_APPROX_SCALE_LOC);
 	for (int i = 0; i < vec_vec_contours_mask.size(); i++)
 	{
 		RNG rng;
@@ -25,7 +26,7 @@ void getPolygon(Mat& input, Mat& mat_for_show, std::vector<cv::Point>& vec_point
 		//Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
 		//cv::drawContours(mat_for_show, vec_points_polys_phoxi, i, color, 2, 8, std::vector<cv::Vec4i>(), 0, cv::Point());
 		//multimap_polys_points.insert(std::make_pair(vec_vec_contours_mask[i].size(), i));
-        multimap_polys_points.insert(std::make_pair(ComputePolygonArea(vec_vec_contours_mask[i]), i));
+        multimap_polys_points.insert(std::make_pair(contourArea(vec_vec_contours_mask[i]), i));
         cout<<"size"<<ComputePolygonArea(vec_vec_contours_mask[i])<<endl;
       //  imshowResize("contourii", mat_for_show);
      //   waitKey(0);
@@ -104,5 +105,13 @@ double ComputePolygonArea(const vector<Point> &points)
         s += points[i].y * (points[i-1].x - points[(i+1)%point_num].x);
     return fabs(s/2.0);
 }
-
+void close_mask(Mat& mask,int open_scale,int close_scale,Mat& closed_mask){
+    
+	Mat kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(open_scale, open_scale));
+	morphologyEx(mask, closed_mask, cv::MORPH_OPEN, kernel);
+    imshowResize("after open",closed_mask);
+	 kernel = getStructuringElement(cv::MorphShapes::MORPH_RECT, Size(close_scale, close_scale));
+	morphologyEx(closed_mask, closed_mask, cv::MORPH_CLOSE, kernel);
+    imshowResize("after close",closed_mask);
+}
 
