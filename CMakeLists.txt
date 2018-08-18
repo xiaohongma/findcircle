@@ -5,7 +5,7 @@ find_package(OpenCV REQUIRED)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-add_executable(findcircle main.cpp utils.cpp  segmentation.cpp dfs.cpp feature_circle.cpp feature_contour.cpp polygon_calculation.hpp contours.cpp)
+add_executable(findcircle main.cpp utils.cpp  segmentation.hpp Feature.hpp feature_circle.hpp polygon_calculation.hpp  dfs.hpp)
 target_link_libraries(findcircle ${OpenCV_LIBS})
 
 #install(TARGETS findcircle RUNTIME DESTINATION bin)

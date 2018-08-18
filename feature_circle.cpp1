@@ -1,22 +1,22 @@
 
-#include "feature_circle.h"
+#include "feature_circle.hpp"
 #include "utils.h"
-#include "dfs.h"
+#include "dfs.hpp"
 #include "polygon_calculation.hpp"
-void extend_by_circle(Mat& visited, Mat& img,Mat& mask,vector<Point> key_pts, int direction[], vector<int>& params,vector<Point>& centers,float* score,vector<Point>& visit_points, RotatedRect& bounding_r_rect)
+void extend_by_circle(cv::Mat& visited, cv::Mat& img,cv::Mat& mask,std::vector<cv::Point> key_pts,cv::Vec2i direction, std::vector<int>& params,std::vector<cv::Point>& centers,float* score,std::vector<cv::Point>& visit_points, cv::RotatedRect& bounding_r_rect)
 {
    // refine the rect using circle center position
     bool refine  =true;
     if(centers.empty()) {
-        cout<<"no circle input in extend rect step "<<endl;
+        std::cout<<"no circle input in extend rect step "<<std::endl;
         return;
     }
     // extend rect(not use circle feature);
-    RotatedRect r_rect;
-    get_rotated_rect(img,key_pts,direction,r_rect);
+    cv::RotatedRect r_rect;
+    get_rotated_rect(img,key_pts,cv::Size2i(direction[0],direction[1]),r_rect);
     // get bounding box of circles, which inside or intersection of input rect;
-    RotatedRect bounding_rect1;
-    vector<Point> remaining_circles;
+    cv::RotatedRect bounding_rect1;
+    std::vector<cv::Point> remaining_circles;
     int radius = params.at(4);
     find_bounding_rect(visited,img,r_rect,centers,radius,bounding_rect1,remaining_circles);
     
@@ -32,28 +32,28 @@ void extend_by_circle(Mat& visited, Mat& img,Mat& mask,vector<Point> key_pts, in
 
   
     if( bounding_rect1.size.empty()){
-        cout <<"no bounding rect"<<endl;
+        std::cout <<"no bounding rect"<<std::endl;
         return;
     }
     //refine use circle center position and polygon edge. In the following, we relocation the rect angle and start point based on circle centers along the two sides.
     if(refine){
         // two segments extracted from polygon, insecting in the start point.
-        Vec3f line1_params;
+        cv::Vec3f line1_params;
         line1_params[0] = key_pts.at(1).y-key_pts.at(0).y;
         line1_params[1] = key_pts.at(0).x - key_pts.at(1).x;
         line1_params[2] = key_pts.at(1).x*key_pts.at(0).y-key_pts.at(0).x*key_pts.at(1).y;
         
-        Vec3f line2_params;
+        cv::Vec3f line2_params;
         line2_params[0] = key_pts.at(2).y-key_pts.at(0).y;
         line2_params[1] = key_pts.at(0).x - key_pts.at(2).x;
         line2_params[2] = key_pts.at(2).x*key_pts.at(0).y-key_pts.at(0).x*key_pts.at(2).y;
         // find circles nearest to the two sides separately.
-        vector<float> d_line1;
+        std::vector<float> d_line1;
         float min_d_line1 = 100000;
         int ind_line1 = 0;
-        vector<Point> line1_nearest_point;
+        std::vector<cv::Point> line1_nearest_point;
         for(int i = 0;i<remaining_circles.size();i++){
-            Vec3f v_point(remaining_circles.at(i).x,remaining_circles.at(i).y,1);
+            cv::Vec3f v_point(remaining_circles.at(i).x,remaining_circles.at(i).y,1);
             float d_scale = sqrt(line1_params[0]*line1_params[0]+line1_params[1]*line1_params[1]);
             float d1 = abs(line1_params.dot(v_point))/d_scale;
             d_line1.push_back(d1);
@@ -71,11 +71,11 @@ void extend_by_circle(Mat& visited, Mat& img,Mat& mask,vector<Point> key_pts, in
         }
         
         
-        vector<float> d_line2;
+        std::vector<float> d_line2;
         float min_d_line2 = 100000;
-        vector<Point> line2_nearest_point;
+        std::vector<cv::Point> line2_nearest_point;
         for(int i = 0;i<remaining_circles.size();i++){
-            Vec3f v_point(remaining_circles.at(i).x,remaining_circles.at(i).y,1);
+            cv::Vec3f v_point(remaining_circles.at(i).x,remaining_circles.at(i).y,1);
             float d_scale = sqrt(line2_params[0]*line2_params[0]+line2_params[1]*line2_params[1]);
             float d2 = abs(line2_params.dot(v_point))/d_scale;
             d_line2.push_back(d2);
@@ -91,26 +91,26 @@ void extend_by_circle(Mat& visited, Mat& img,Mat& mask,vector<Point> key_pts, in
             }
         }
         
-        Vec4f line1,line2;
+        cv::Vec4f line1,line2;
         fitLine(line1_nearest_point,line1,cv::DistanceTypes::DIST_L2,0,0.01,0.01);
         fitLine(line2_nearest_point,line2,cv::DistanceTypes::DIST_L2,0,0.01,0.01);
-       Point A1,B1;
+       cv::Point A1,B1;
        // incase that the slope is infinity(x=b)
          if(abs(line1[0])<0.01){
-             A1 = Point(line1[2],0);
-             B1 = Point(line1[2],visited.size().height);
+             A1 = cv::Point(line1[2],0);
+             B1 = cv::Point(line1[2],visited.size().height);
         }else{
-            A1 =  Point(0,line1[3]-(line1[1]*line1[2]/line1[0]));
-            B1 = Point(visited.size().width,(visited.size().width-line1[2])*line1[1]/line1[0]+line1[3]);   
+            A1 =  cv::Point(0,line1[3]-(line1[1]*line1[2]/line1[0]));
+            B1 = cv::Point(visited.size().width,(visited.size().width-line1[2])*line1[1]/line1[0]+line1[3]);   
         }
         
-        Point A2,B2;
+        cv::Point A2,B2;
         if(abs(line2[0])<0.01){
-             A2 = Point(line2[2],0);
-             B2 = Point(line2[2],visited.size().height);
+             A2 = cv::Point(line2[2],0);
+             B2 = cv::Point(line2[2],visited.size().height);
         }else{
-             A2 = Point(0,line2[3]-(line2[1]*line2[2]/line2[0]));
-             B2 =  Point(visited.size().width,(visited.size().width-line2[2])*line2[1]/line2[0]+line2[3]);
+             A2 = cv::Point(0,line2[3]-(line2[1]*line2[2]/line2[0]));
+             B2 =  cv::Point(visited.size().width,(visited.size().width-line2[2])*line2[1]/line2[0]+line2[3]);
         }
                
        /* line(test,A1,B1,Scalar(0,255,0));
@@ -119,24 +119,24 @@ void extend_by_circle(Mat& visited, Mat& img,Mat& mask,vector<Point> key_pts, in
        circle(test,Point(line1[2],line1[3]),5,Scalar(0,255,0),-1);
        circle(test,Point(line2[2],line2[3]),5,Scalar(0,255,0),-1);*/
        
-       Point inter_point =  get_point_segment_cross(A1,B1,A2,B2);
-       cout<<"inter_point"<<inter_point<<endl;
+       cv::Point inter_point =  get_point_segment_cross(A1,B1,A2,B2);
+       std::cout<<"inter_point"<<inter_point<<std::endl;
        
        //incase we missed the circle near basepoint
-       Point new_base_point;
+       cv::Point new_base_point;
        find_nearest_center(remaining_circles,inter_point,&new_base_point);
        if(get_distance(new_base_point,inter_point)>radius){
            new_base_point = inter_point;
-           cout <<"missed the corner circle"<<endl;
+           std::cout <<"missed the corner circles"<<std::endl;
         }
     
-        vector<Point> new_key_pts;
+        std::vector<cv::Point> new_key_pts;
         new_key_pts.push_back(new_base_point);
-        new_key_pts.push_back(Point(line1[2],line1[3]));
-        new_key_pts.push_back(Point(line2[2],line2[3]));
+        new_key_pts.push_back(cv::Point(line1[2],line1[3]));
+        new_key_pts.push_back(cv::Point(line2[2],line2[3]));
     
-        RotatedRect ro_rect;
-        int new_direct[2];
+        cv::RotatedRect ro_rect;
+        cv::Vec2i new_direct;
         new_direct[0] =  direction[0] -radius;
         new_direct[1] = direction[1] -radius;
         get_rotated_rect(img,new_key_pts,new_direct,ro_rect);
@@ -144,7 +144,7 @@ void extend_by_circle(Mat& visited, Mat& img,Mat& mask,vector<Point> key_pts, in
      
         find_bounding_rect(visited,img,ro_rect,centers,radius,bounding_rect1,remaining_circles);
         if( bounding_rect1.size.empty()){
-            cout <<"no bounding rect"<<endl;
+            std::cout <<"no bounding rect"<<std::endl;
             return;
         }
     
@@ -158,14 +158,14 @@ void extend_by_circle(Mat& visited, Mat& img,Mat& mask,vector<Point> key_pts, in
     int n  = params.at(3);
     //score <=1
     *score = (circle_count/(m*n+0.0))>1?1:circle_count/(m*n+0.0);
-     cout<<"score" << *score<<endl;
+     std::cout<<"score" << *score<<std::endl;
     // return bounding box of all circle
     bounding_r_rect = bounding_rect1;
     
     //return visited points
-    vector<Point> rotated_rect_points;
+    std::vector<cv::Point> rotated_rect_points;
     count_points_in_rotated_rect(bounding_r_rect,rotated_rect_points);
-    vector<Point> remaining_rotated_rect_points;
+    std::vector<cv::Point> remaining_rotated_rect_points;
     for(int i = 0; i <rotated_rect_points.size();i++){
        if(mask.at<uchar>(rotated_rect_points.at(i))==255 && visited.at<uchar>(rotated_rect_points.at(i))==0){
            remaining_rotated_rect_points.push_back(rotated_rect_points.at(i));
@@ -181,41 +181,41 @@ void extend_by_circle(Mat& visited, Mat& img,Mat& mask,vector<Point> key_pts, in
 }
 
 
-void find_bounding_rect(Mat& visited,Mat& img,RotatedRect& r_rect,vector<Point>& centers,int radius,RotatedRect& bounding_rect,vector<Point>& remaining_circles){
+void find_bounding_rect(cv::Mat& visited,cv::Mat& img, cv::RotatedRect& r_rect,std::vector<cv::Point>& centers,int radius,cv::RotatedRect& bounding_rect,std::vector<cv::Point>& remaining_circles){
     
    // DrawRotatedRect(img,r_rect,Scalar(255));
    // imshowResize("rect",img);
    // waitKey(0);
-    RotatedRect whole(Point(visited.cols,0),Point(0,0),Point(0,visited.rows));
-    vector<Point> rotate_intersect_pts;
+    cv::RotatedRect whole(cv::Point(visited.cols,0),cv::Point(0,0),cv::Point(0,visited.rows));
+    std::vector<cv::Point> rotate_intersect_pts;
     rotatedRectangleIntersection(r_rect,whole,rotate_intersect_pts);
     double inters_area = contourArea(rotate_intersect_pts);
     float ratio = inters_area/(r_rect.size.area());
-    cout <<"ratio "<<ratio << endl;
+    std::cout <<"ratio "<<ratio << std::endl;
     if(ratio <=0.8){
-        cout <<"ratio "<<ratio <<" is too small"<<endl;
+       std::cout <<"ratio "<<ratio <<" is too small"<<std::endl;
         return;    
     }
     //intersection with the whole image
-    RotatedRect inters_ro_rect = minAreaRect(rotate_intersect_pts);
+    cv::RotatedRect inters_ro_rect = minAreaRect(rotate_intersect_pts);
 
     
     
     
    int num = centers.size();
-    vector<bool> belong_rectx(num);
+    std::vector<bool> belong_rectx(num);
     circle_belong_rect(inters_ro_rect,radius,centers,img, belong_rectx);
    
     
-    vector <Point> remaining;
-    vector<Point> circle_points;
+    std::vector <cv::Point> remaining;
+    std::vector<cv::Point> circle_points;
 
     // the next rect contains less unvisited circle centers than m*n, we also return current point.
     for (int i = 0; i < num; i++) {
         //circle(visited,centers.at(i),radius,Scalar(155),1,4,0);
         if(belong_rectx.at(i)&&visited.at<uchar>(centers.at(i))==0){
             remaining.push_back(centers.at(i));
-            vector<Point> pts;
+            std::vector<cv::Point> pts;
            // points_on_circle(centers.at(i),radius,pts);
             raster_circle(centers.at(i),radius,pts);
             circle_points.insert(circle_points.end(),pts.begin(),pts.end());
@@ -223,16 +223,16 @@ void find_bounding_rect(Mat& visited,Mat& img,RotatedRect& r_rect,vector<Point>&
     }
      
     if(remaining.empty()){
-        cout <<"no remaining circles"<<endl;
+        std::cout <<"no remaining circles"<<std::endl;
         return;
     }
-       cout <<"remaining"<<remaining.size()<<endl;
+       std::cout <<"remaining"<<remaining.size()<<std::endl;
        
   
           
-   Mat visited_clone(visited.size(),CV_8UC1,Scalar(0));
+   cv::Mat visited_clone(visited.size(),CV_8UC1,cv::Scalar(0));
    for(int i = 0;i <centers.size();i++){
-       circle(visited_clone,centers.at(i),radius,Scalar(255));
+       circle(visited_clone,centers.at(i),radius,cv::Scalar(255));
       // visited_clone.at<uchar>(circle_points.at(i))=255;
     }
     
@@ -249,14 +249,14 @@ void find_bounding_rect(Mat& visited,Mat& img,RotatedRect& r_rect,vector<Point>&
 }
 
 
-void circle_belong_rect( RotatedRect& rect, double radius, vector<Point>& centers,Mat& img,vector<bool>& belong_rect){
+void circle_belong_rect( cv::RotatedRect& rect, double radius, std::vector<cv::Point>& centers,cv::Mat& img,std::vector<bool>& belong_rect){
     
     int num = centers.size();
   
-    Point2f corner_pts[4]; 
+    cv::Point2f corner_pts[4]; 
     rect.points(corner_pts);
-    Point2f* lastItemPointer = (corner_pts + sizeof corner_pts / sizeof corner_pts[0]);
-    vector<Point2f> contour_pts(corner_pts, lastItemPointer);
+    cv::Point2f* lastItemPointer = (corner_pts + sizeof corner_pts / sizeof corner_pts[0]);
+    std::vector<cv::Point2f> contour_pts(corner_pts, lastItemPointer);
     for(int i  = 0; i<num;i++){
         double d = pointPolygonTest(contour_pts,centers.at(i),true);
         if(d>=-radius)
@@ -270,10 +270,10 @@ void circle_belong_rect( RotatedRect& rect, double radius, vector<Point>& center
     
 }
 
-void detection_circles(Mat& img,vector<int> params,vector<Point>& centers){
+void detection_circles(cv::Mat& img, std::vector<int> params,std::vector<cv::Point>& centers){
     
-    Mat img_blur;
-    blur(img,img_blur,Size(3,3));
+    cv::Mat img_blur;
+    blur(img,img_blur,cv::Size(3,3));
     IplImage ipltmp = img_blur;
     double canny_low;
     double canny_high;
@@ -292,18 +292,18 @@ void detection_circles(Mat& img,vector<int> params,vector<Point>& centers){
  
     // hough circles, this can be optimized to reduce running time
     int acc_threshold = round(3.14*2*ass_radius*0.15);// make the 2*n*n > count>= n*n
-    vector<Vec3f> circles;
+    std::vector<cv::Vec3f> circles;
 
     HoughCircles(img,circles,CV_HOUGH_GRADIENT,1,
                  min_dist,canny_thresroud,acc_threshold,min_radius,max_radius);
     
     if(circles.empty()){
-        cout<<"no circle detected using hough circle detection, please ensure the right params"<<endl;
+        std::cout<<"no circle detected using hough circle detection, please ensure the right params"<<std::endl;
         return; 
     }
    // Mat mat_for_show(img.size(),CV_8UC3,Scalar(0));
     for (int i = 0; i< circles.size(); i++) {
-        Point center(round(circles[i][0]), round(circles[i][1]));
+        cv::Point center(round(circles[i][0]), round(circles[i][1]));
         centers.push_back(center);
       //  circle(mat_for_show,center,20,Scalar(255));
 
@@ -315,7 +315,7 @@ void detection_circles(Mat& img,vector<int> params,vector<Point>& centers){
 
 
 
-void raster_circle(Point center,int radius, vector<Point>& points)
+void raster_circle(cv::Point center,int radius, std::vector<cv::Point>& points)
 {
     int x0 = center.x;
     int y0 = center.y;
@@ -324,10 +324,10 @@ void raster_circle(Point center,int radius, vector<Point>& points)
     int ddF_y = -2 * radius;
     int x = 0;
     int y = radius;
-    points.push_back(Point(x0,y0+radius));
-    points.push_back(Point(x0,y0-radius));
-    points.push_back(Point(x0 + radius,y0));
-    points.push_back(Point(x0 - radius,y0));
+    points.push_back(cv::Point(x0,y0+radius));
+    points.push_back(cv::Point(x0,y0-radius));
+    points.push_back(cv::Point(x0 + radius,y0));
+    points.push_back(cv::Point(x0 - radius,y0));
     
     while(x < y) 
     {
@@ -340,20 +340,20 @@ void raster_circle(Point center,int radius, vector<Point>& points)
         x++;
         ddF_x += 2;
         f += ddF_x + 1;    
-        points.push_back(Point(x0 + x, y0 + y));
-        points.push_back(Point(x0 + y, y0 + x));
-        points.push_back(Point(x0 - y, y0 + x));
-        points.push_back(Point(x0 - x, y0 + y));
-        points.push_back(Point(x0 - x, y0 - y));
-        points.push_back(Point(x0 - y, y0 - x));
-        points.push_back(Point(x0 + y, y0 - x));
-        points.push_back(Point(x0 + x, y0 - y));
+        points.push_back(cv::Point(x0 + x, y0 + y));
+        points.push_back(cv::Point(x0 + y, y0 + x));
+        points.push_back(cv::Point(x0 - y, y0 + x));
+        points.push_back(cv::Point(x0 - x, y0 + y));
+        points.push_back(cv::Point(x0 - x, y0 - y));
+        points.push_back(cv::Point(x0 - y, y0 - x));
+        points.push_back(cv::Point(x0 + y, y0 - x));
+        points.push_back(cv::Point(x0 + x, y0 - y));
     }
 }
 
-void find_nearest_center(vector<Point>& centers, Point basepoint,Point* nearest_point){
+void find_nearest_center(std::vector<cv::Point>& centers, cv::Point basepoint,cv::Point* nearest_point){
     int distance = 10000*10000;
-    Point best_point(basepoint);
+    cv::Point best_point(basepoint);
     
     for(int i = 0;i <centers.size();i++){
         int d = (centers.at(i).x -basepoint.x)*(centers.at(i).x -basepoint.x)+(centers.at(i).y -basepoint.y)*(centers.at(i).y -basepoint.y);
@@ -367,24 +367,24 @@ void find_nearest_center(vector<Point>& centers, Point basepoint,Point* nearest_
 
 
 
-void count_points_in_rotated_rect(RotatedRect& rotated_rect,vector<Point>& rotated_rect_points){
-    Rect bounding_rect = rotated_rect.boundingRect();
+void count_points_in_rotated_rect(cv::RotatedRect& rotated_rect,std::vector<cv::Point>& rotated_rect_points){
+    cv::Rect bounding_rect = rotated_rect.boundingRect();
     
     int x0 = bounding_rect.tl().x;
     int y0 = bounding_rect.tl().y;
     int x_end = bounding_rect.br().x;
     int y_end = bounding_rect.br().y;
-    Point2f corner_pts[4]; 
+    cv::Point2f corner_pts[4]; 
     rotated_rect.points(corner_pts);
     
-    Point2f* lastItemPointer = (corner_pts + sizeof corner_pts / sizeof corner_pts[0]);
-    vector<Point2f> contour_pts(corner_pts, lastItemPointer);
+    cv::Point2f* lastItemPointer = (corner_pts + sizeof corner_pts / sizeof corner_pts[0]);
+    std::vector<cv::Point2f> contour_pts(corner_pts, lastItemPointer);
     
     for(int x = x0;x<x_end;x++){ 
         for(int y = y0;y<y_end;y++){
-            double a = pointPolygonTest(contour_pts,Point(x,y),false);
+            double a = pointPolygonTest(contour_pts,cv::Point(x,y),false);
             if(a>=0)
-                rotated_rect_points.push_back(Point(x,y));
+                rotated_rect_points.push_back(cv::Point(x,y));
         }
     }
     

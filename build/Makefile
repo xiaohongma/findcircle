@@ -123,114 +123,6 @@ findcircle/fast:
 	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/build
 .PHONY : findcircle/fast
 
-contours.o: contours.cpp.o
-
-.PHONY : contours.o
-
-# target to build an object file
-contours.cpp.o:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/contours.cpp.o
-.PHONY : contours.cpp.o
-
-contours.i: contours.cpp.i
-
-.PHONY : contours.i
-
-# target to preprocess a source file
-contours.cpp.i:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/contours.cpp.i
-.PHONY : contours.cpp.i
-
-contours.s: contours.cpp.s
-
-.PHONY : contours.s
-
-# target to generate assembly for a file
-contours.cpp.s:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/contours.cpp.s
-.PHONY : contours.cpp.s
-
-dfs.o: dfs.cpp.o
-
-.PHONY : dfs.o
-
-# target to build an object file
-dfs.cpp.o:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/dfs.cpp.o
-.PHONY : dfs.cpp.o
-
-dfs.i: dfs.cpp.i
-
-.PHONY : dfs.i
-
-# target to preprocess a source file
-dfs.cpp.i:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/dfs.cpp.i
-.PHONY : dfs.cpp.i
-
-dfs.s: dfs.cpp.s
-
-.PHONY : dfs.s
-
-# target to generate assembly for a file
-dfs.cpp.s:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/dfs.cpp.s
-.PHONY : dfs.cpp.s
-
-feature_circle.o: feature_circle.cpp.o
-
-.PHONY : feature_circle.o
-
-# target to build an object file
-feature_circle.cpp.o:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/feature_circle.cpp.o
-.PHONY : feature_circle.cpp.o
-
-feature_circle.i: feature_circle.cpp.i
-
-.PHONY : feature_circle.i
-
-# target to preprocess a source file
-feature_circle.cpp.i:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/feature_circle.cpp.i
-.PHONY : feature_circle.cpp.i
-
-feature_circle.s: feature_circle.cpp.s
-
-.PHONY : feature_circle.s
-
-# target to generate assembly for a file
-feature_circle.cpp.s:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/feature_circle.cpp.s
-.PHONY : feature_circle.cpp.s
-
-feature_contour.o: feature_contour.cpp.o
-
-.PHONY : feature_contour.o
-
-# target to build an object file
-feature_contour.cpp.o:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/feature_contour.cpp.o
-.PHONY : feature_contour.cpp.o
-
-feature_contour.i: feature_contour.cpp.i
-
-.PHONY : feature_contour.i
-
-# target to preprocess a source file
-feature_contour.cpp.i:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/feature_contour.cpp.i
-.PHONY : feature_contour.cpp.i
-
-feature_contour.s: feature_contour.cpp.s
-
-.PHONY : feature_contour.s
-
-# target to generate assembly for a file
-feature_contour.cpp.s:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/feature_contour.cpp.s
-.PHONY : feature_contour.cpp.s
-
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -257,33 +149,6 @@ main.s: main.cpp.s
 main.cpp.s:
 	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/main.cpp.s
 .PHONY : main.cpp.s
-
-segmentation.o: segmentation.cpp.o
-
-.PHONY : segmentation.o
-
-# target to build an object file
-segmentation.cpp.o:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/segmentation.cpp.o
-.PHONY : segmentation.cpp.o
-
-segmentation.i: segmentation.cpp.i
-
-.PHONY : segmentation.i
-
-# target to preprocess a source file
-segmentation.cpp.i:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/segmentation.cpp.i
-.PHONY : segmentation.cpp.i
-
-segmentation.s: segmentation.cpp.s
-
-.PHONY : segmentation.s
-
-# target to generate assembly for a file
-segmentation.cpp.s:
-	$(MAKE) -f CMakeFiles/findcircle.dir/build.make CMakeFiles/findcircle.dir/segmentation.cpp.s
-.PHONY : segmentation.cpp.s
 
 utils.o: utils.cpp.o
 
@@ -321,24 +186,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... findcircle"
 	@echo "... edit_cache"
-	@echo "... contours.o"
-	@echo "... contours.i"
-	@echo "... contours.s"
-	@echo "... dfs.o"
-	@echo "... dfs.i"
-	@echo "... dfs.s"
-	@echo "... feature_circle.o"
-	@echo "... feature_circle.i"
-	@echo "... feature_circle.s"
-	@echo "... feature_contour.o"
-	@echo "... feature_contour.i"
-	@echo "... feature_contour.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
-	@echo "... segmentation.o"
-	@echo "... segmentation.i"
-	@echo "... segmentation.s"
 	@echo "... utils.o"
 	@echo "... utils.i"
 	@echo "... utils.s"

@@ -4,8 +4,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include "utils.h"
 #include "feature_circle.h"
-using namespace cv;
-using namespace std;
+
 
 /**
  * deep first search for segmentation
@@ -19,7 +18,7 @@ are visited( setted to 255),we think we have found segmantion road.
 @param path save current path
 @param allpaths save allpaths
 */
-template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int direction[8][2], int feature,vector<T>& units, std::vector<int>& params, std::vector<StepInfo>& path, std::vector<PathInfo>& allpaths);
+template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int direction[8][2], int feature,std::vector<T>& units, std::vector<int>& params, std::vector<StepInfo>& path, std::vector<PathInfo>& allpaths);
 
 
 /**
@@ -33,7 +32,7 @@ template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int
  @param score return the score in this step.
  */
 
-template<typename T>void extendAdjustRect(cv::Mat& visited, cv::Mat& img, cv::Mat& mask, vector<Point>& key_pts, int direction[], int feature, std::vector< T >& units, std::vector< int >& params, float* score, std::vector< cv::Point >& visit_points, RotatedRect& bounding_r_rect); 
+template<typename T>void extendAdjustRect(cv::Mat& visited, cv::Mat& img, cv::Mat& mask, std::vector<cv::Point>& key_pts, int direction[], int feature, std::vector< T >& units, std::vector< int >& params, float* score, std::vector< cv::Point >& visit_points, cv::RotatedRect& bounding_r_rect); 
 
 
 /**
@@ -44,13 +43,13 @@ template<typename T>void extendAdjustRect(cv::Mat& visited, cv::Mat& img, cv::Ma
  @param value uchar value(0 or 255) is to be written into center point
  */
 
-void setVisited(cv::Mat& visited, cv::Mat& img,vector<Point>& visit_points,uchar value);
+void setVisited(cv::Mat& visited, cv::Mat& img,std::vector<cv::Point>& visit_points,uchar value);
 /**
  this function used to determine when we have visited whole img. 
  @param visited nothing to say.
  @param path, allpath, same with the above
  */
-template <typename T>  bool isEnd(Mat& visited,vector<int>& params,vector<T>& units  );
+template <typename T>  bool isEnd( cv::Mat& visited, std::vector<int>& params, std::vector<T>& units);
 template <typename T>  bool isEnd( cv::Mat& visited, std::vector<int>& params, std::vector<T>& units)
 {
 
@@ -64,7 +63,7 @@ template <typename T>  bool isEnd( cv::Mat& visited, std::vector<int>& params, s
     }
 
     if(count<m*n*0.5){
-        cout<<"remaining units "<<count << endl;
+        std::cout<<"remaining units "<<count << std::endl;
         isend = true;
     }
 
@@ -91,12 +90,12 @@ bool isContinue(float score);
 * @param params p_params:...
 * @param key_pts p_key_pts:...
 */
-void find_start_point( cv::Mat& visited, cv::Mat& img, std::vector<int>& params,vector<Point>& key_pts);
-void get_rotated_rect(Mat& img,vector<Point> key_pts,int direction[], RotatedRect& ro_rect);
+void find_start_point( cv::Mat& visited, cv::Mat& img, std::vector<int>& params,std::vector<cv::Point>& key_pts);
+void get_rotated_rect(cv::Mat& img,std::vector<cv::Point> key_pts,int direction[], cv::RotatedRect& ro_rect);
 
 
 
-template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int direction[8][2], int feature,vector<T>& units, std::vector<int>& params, std::vector<StepInfo>& path, std::vector<PathInfo>& allpaths)
+template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int direction[8][2], int feature,std::vector<T>& units, std::vector<int>& params, std::vector<StepInfo>& path, std::vector<PathInfo>& allpaths)
 {
 
     if (isEnd(visited,params,units)) {
@@ -106,7 +105,7 @@ template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int
         allpaths.push_back(pathInfo);
         return;
     }
-    vector<Point> key_pts;
+    std::vector<cv::Point> key_pts;
     // find key_pts in polygon
     find_start_point(visited,img,params,key_pts);
     
@@ -114,8 +113,8 @@ template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int
 
     for (int i = 0; i<2; i++) {
          float score=0;
-         vector<Point> visit_points;
-         RotatedRect final_r_rect;
+         std::vector<cv::Point> visit_points;
+         cv::RotatedRect final_r_rect;
         extendAdjustRect(visited,img,mask,key_pts,direction[i],feature,units, params,&score,visit_points,final_r_rect);
         //如果周围可以有邻接矩形
         if(isContinue(score)) {
@@ -139,7 +138,7 @@ template <typename T> void dfs(cv::Mat& visited, cv::Mat& img, cv::Mat& mask,int
 }
 
 
-template<typename T>void extendAdjustRect(cv::Mat& visited, cv::Mat& img, cv::Mat& mask, vector<Point>& key_pts, int direction[], int feature, std::vector< T >& units, std::vector< int >& params, float* score, std::vector< cv::Point >& visit_points, RotatedRect& bounding_r_rect)
+template<typename T>void extendAdjustRect(cv::Mat& visited, cv::Mat& img, cv::Mat& mask, std::vector<cv::Point>& key_pts, int direction[], int feature, std::vector< T >& units, std::vector< int >& params, float* score, std::vector< cv::Point >& visit_points, cv::RotatedRect& bounding_r_rect)
 {
     switch(feature){
         case FEATURE_USE_CIRCLE:
@@ -152,7 +151,7 @@ template<typename T>void extendAdjustRect(cv::Mat& visited, cv::Mat& img, cv::Ma
             //score_by_texture(visited,img,direction,basePoint,params,score);
             break;
         default:
-            cout <<"please choose a right feature"<<endl;
+            std::cout <<"please choose a right feature"<<std::endl;
             //break;
     }
     

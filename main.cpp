@@ -6,24 +6,19 @@
 #include <algorithm>
 #include <opencv2/core/core.hpp>
 #include "utils.h"
-#include "segmentation.h"
-#include "feature_circle.h"
-#include "contours.h"
-#include "dfs.h"
-using namespace cv;
-using namespace std;
-
+#include "segmentation.hpp"
+#include "dfs.hpp"
 //prior: radius, n*n the num in each rectangle(error<3)
 // the number(threshold) of circles that can be segmented(0.9)  
 //可乐21, 24*9 4*6 农夫11.7 28*10pixel 4*7 315*163.3
-double assume_radius = 21;
-int m =6;//x
-int n =4;//y 
-float height = 297.8;
-float  width= 194.4;
-int open_scale = round(assume_radius*0.25);
-int close_scale = round(assume_radius*2);
-int poly_approx_scale = round(1.2*assume_radius);
+double d_assume_radius = 21;
+int n_m =6;//x
+int n_n =4;//y 
+float f_height = 297.8;
+float  f_width= 194.4;
+int n_open_scale = round(d_assume_radius*0.25);
+int n_close_scale = round(d_assume_radius*2);
+int n_poly_approx_scale = round(1.2*d_assume_radius);
 
 
 
@@ -35,7 +30,38 @@ int main(int argc, char **argv) {
     
 
  for(int i = 4;i<=24;i++){
-     /* cv::String p1 = "kuoluo/"+to_string(i)+"_texture.bmp";
+    //int i = 4 ;
+    cv::Mat mat_src_image = cv::imread("kuoluo/"+std::to_string(i)+"_texture.bmp",0);
+    cv::Mat mat_mask = cv::imread("kuoluo/"+std::to_string(i)+".bmp",0);
+    threshold(mat_mask,mat_mask,100,255,cv::THRESH_BINARY);
+    cv::Mat mat_roi;
+    mat_src_image.copyTo(mat_roi,mat_mask);
+    //imshowResize("the "+to_string(i)+" img",mask);
+    //waitKey(0);
+    std::vector<int> vec_params;
+    vec_params.push_back(round(f_width));
+    vec_params.push_back(round(f_height));  
+    vec_params.push_back(n_m);
+    vec_params.push_back(n_n);
+    vec_params.push_back(round(d_assume_radius));
+    vec_params.push_back(n_open_scale);
+    vec_params.push_back(n_close_scale);
+    vec_params.push_back(n_poly_approx_scale);
+    
+     std::vector<PathInfo> vec_path_allpaths;
+    Segmentation m_segmentation(mat_roi,mat_mask,vec_params);
+    int time_t = clock();
+    m_segmentation.segment_roi(FEATURE::FEATURE_USE_CIRCLE,vec_path_allpaths);
+    // show segmentation results
+    m_segmentation.printoutPath(vec_path_allpaths,false);
+    int time_t2 = clock();
+   std::cout <<"time "<< (time_t2-time_t)/CLOCKS_PER_SEC<<std::endl;
+   std::cout <<"this is the "<<i<<" img"<<std::endl;
+    }
+    
+    
+    
+        /* cv::String p1 = "kuoluo/"+to_string(i)+"_texture.bmp";
       cv::String p2 = "kuoluo_60/"+to_string(i)+"_texture.bmp";
       cv::String p3 = "kuoluo/"+to_string(i)+".bmp";
       cv::String p4 = "kuoluo_60/"+to_string(i)+".bmp";
@@ -52,36 +78,6 @@ int main(int argc, char **argv) {
     }
       rotateImg(p1,p2,angle);
       rotateImg(p3,p4,angle);*/
-      
-      
-      
-    //int i = 14 ;
-    Mat srcImage = imread("kuoluo/"+to_string(i)+"_texture.bmp",0);
-    Mat mask = imread("kuoluo/"+to_string(i)+".bmp",0);
-    threshold(mask,mask,100,255,THRESH_BINARY);
-    Mat roi;
-    srcImage.copyTo(roi,mask);
-    //imshowResize("the "+to_string(i)+" img",mask);
-    //waitKey(0);
-    
-    vector<int> params;
-    params.push_back(round(width));
-    params.push_back(round(height));  
-    params.push_back(m);
-    params.push_back(n);
-    params.push_back(round(assume_radius));
-    params.push_back(open_scale);
-    params.push_back(close_scale);
-    params.push_back(poly_approx_scale);
-    
-   
-    int t = clock();
-    segmentation_roi(roi,mask,FEATURE_USE_CIRCLE,params);
-    int t2 = clock();
-   cout <<"time "<< (t2-t)/CLOCKS_PER_SEC<<endl;
-   cout <<"this is the "<<i<<" img"<<endl;
-    
-    }
    
     return 0;
 }

@@ -2,9 +2,8 @@
 #include <numeric>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-using namespace cv;
-using namespace std;
 #include "utils.h"
+#include "polygon_calculation.hpp"
 void imshowResize(const cv::String& winname, const cv::Mat& img)
 {
     namedWindow(winname, CV_WINDOW_NORMAL);
@@ -12,7 +11,7 @@ void imshowResize(const cv::String& winname, const cv::Mat& img)
     imshow(winname, img);
 }
 
-string floatToString(float number, int n){
+std::string floatToString(float number, int n){
     std::stringstream ss;
     ss << std::fixed << std::setprecision(n) << number;
     std::string mystring = ss.str();
@@ -147,9 +146,9 @@ int rotateImg(cv::String read_path,cv::String out_path,float angle){
  	cvGetQuadrangleSubPix( des, des_rot, &M);
 	//cvNamedWindow( "dst", 1 );
     cv::Mat mat = cv::cvarrToMat(des_rot);
-    imwrite(out_path,mat);
+    cv::imwrite(out_path,mat);
     imshowResize("rotated img",mat);
-	waitKey(0);
+	cv::waitKey(0);
 	return 0;
 }
 void DrawRotatedRect(cv::Mat& img, cv::RotatedRect& rr, cv::Scalar color)
@@ -161,3 +160,49 @@ void DrawRotatedRect(cv::Mat& img, cv::RotatedRect& rr, cv::Scalar color)
         cv::line(img, pts[i], pts[(i + 1) % 4], color, 4);
     }
 }
+
+void get_rotated_rect(cv::Mat& img,std::vector<cv::Point> key_pts,cv::Size2i size, cv::RotatedRect& ro_rect){
+    int width = size.width;
+    int height = size.height;
+    
+    cv::Vec2f v1(key_pts.at(1).x-key_pts.at(0).x,key_pts.at(1).y-key_pts.at(0).y);
+    cv::Vec2f v2(key_pts.at(2).x-key_pts.at(0).x,key_pts.at(2).y-key_pts.at(0).y);
+    
+     float angle1 = acos(v1.dot(cv::Vec2f(1,0))/(get_module(v1)))*180/CV_PI*sng(get_cross_product(cv::Vec2f(1,0),v1));
+     float angle2 = acos(v2.dot(cv::Vec2f(1,0))/(get_module(v2)))*180/CV_PI*sng(get_cross_product(cv::Vec2f(1,0),v2));
+
+    std::cout<<"angle1 "<<angle1<<" angle2 "<<angle2<<std::endl;
+   
+   float angle12 = acos(v1.dot(v2)/(get_module(v1)*get_module(v2)))*180/CV_PI;
+   float bias = 0.5*(angle12-90)*sng(get_cross_product(v1,v2));
+    std::cout <<"bias "<< bias << std::endl;
+   angle1 = angle1+bias;
+   angle2 = angle2-bias;
+    v1 = v1*width/sqrt(v1.dot(v1));
+    v2 = v2*height/sqrt(v2.dot(v2));
+    cv::Point center (0.5*(v1+v2)(0)+key_pts.at(0).x,0.5*(v1+v2)(1)+key_pts.at(0).y);
+   // RotatedRect rr(center,Size2f(width,height),angle1);
+    cv::RotatedRect rr(center,size,angle1);
+    std::cout<<"after bais angle1 "<<angle1<<" angle2 "<<angle2<<std::endl;
+    std::cout <<"rotated angle"<<rr.angle<<" width "<<rr.size.width<<std::endl;
+    ro_rect = rr;
+    
+   /* //Mat mat_for_show = img.clone();
+   Mat mat_for_show = Mat(img.size(), CV_8UC3, Scalar(0));
+  //  circle(mat_for_show,center,10,Scalar(255));
+    DrawRotatedRect(mat_for_show,rr,Scalar(255));
+    line(mat_for_show,key_pts[0],key_pts[1],Scalar(255));
+    line(mat_for_show,key_pts[0],key_pts[2],Scalar(255));
+//
+     
+    cout<<"best points numbe"<<key_pts.at(0)<<endl;
+    cv::circle(mat_for_show,key_pts.at(0), 10, cv::Scalar(255, 125, 125), -1); 
+    cv::circle(mat_for_show,key_pts.at(1), 10, cv::Scalar(255, 125, 125), -1); 
+    cv::circle(mat_for_show,key_pts.at(2), 10, cv::Scalar(255, 125, 125), -1); 
+    putText(mat_for_show,to_string(1),key_pts.at(1),FONT_HERSHEY_SCRIPT_SIMPLEX,4,Scalar(255),4);
+    imshowResize("key_pts",mat_for_show);
+    waitKey(0);*/
+    
+    
+}
+     

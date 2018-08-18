@@ -1,8 +1,6 @@
 #ifndef UTILS
 #define UTILS
 #include <opencv2/opencv.hpp>
-using namespace std;
-using namespace cv;
 
 enum FEATURE{
    FEATURE_USE_CIRCLE = 0,
@@ -21,13 +19,13 @@ enum PARAMS{
 };
 
 struct StepInfo{
-    Point p;//the keypoint of search step. we think it is the bottom left concern of the rectangle.
+    cv::Point p;//the keypoint of search step. we think it is the bottom left concern of the rectangle.
     int direction;//search direction
-    RotatedRect r_rect;
+    cv::RotatedRect r_rect;
     float score;
 };
 struct PathInfo{
-    vector<StepInfo> path;// restore the path
+    std::vector<StepInfo> path;// restore the path
     float tag;// tag of the path, indicate the possibility that this path is right.
 };
 
@@ -35,7 +33,7 @@ struct PathInfo{
  @param winname and img same with the function imshow(). This function will show image in 700*700 size.
  you can also change the value according to your display, or replace it with an auto resize method.
  */
-void imshowResize(const String& winname, const Mat& img);
+void imshowResize(const cv::String& winname, const cv::Mat& img);
 
 /**
  * this two methods are used to adaptive canny edge detection.
@@ -57,7 +55,7 @@ int sng(double x);
 * @param n p_n:...
 * @return std::__cxx11::string
 */
-string floatToString(float number, int n);
+std::string floatToString(float number, int n);
 /**
 * @brief rotate img according to give angle
 * 
@@ -75,6 +73,7 @@ int rotateImg(cv::String read_path,cv::String out_path,float angle);
 * @param color p_color:...
 */
 void DrawRotatedRect(cv::Mat& img, cv::RotatedRect& rr, cv::Scalar color);
+void get_rotated_rect(cv::Mat& img, std::vector<cv::Point> key_pts,cv::Size2i size, cv::RotatedRect& ro_rect);
 #endif
 
 

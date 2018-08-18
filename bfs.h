@@ -2,8 +2,8 @@
 #define BFS
 #include <opencv2/imgproc/imgproc.hpp>
 #include <queue>
-using namespace cv;
-using namespace std;
+//using namespace cv;
+//using namespace std;
 //breadth first search
 void bfs(int direction[8][2], Mat& visited, vector< Point > centers, double radius, double mean_dist, Mat& img);
 void findblcenter(vector<int> visited, vector<Point> centers,Size size, Point* bl);

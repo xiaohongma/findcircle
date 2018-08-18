@@ -2,8 +2,9 @@
 #define FEA_CONTOUR
 
 #include <opencv2/opencv.hpp>
-using namespace cv;
-using namespace std;
+#include <opencv2/core/mat.hpp>
+//using namespace cv;
+//using namespace std;
 
 
 /**
@@ -16,7 +17,7 @@ using namespace std;
 * @param params p_params:...
 * @param score p_score:...
 */
-void score_by_contour(Mat& visited, Mat& img,int direction[], Point basePoint, vector<int> params,float* score);
+//void score_by_contour(Mat& visited, Mat& img,int direction[], Point basePoint, vector<int> params,float* score);
 /**
 * @brief ...
 * 
@@ -27,6 +28,6 @@ void score_by_contour(Mat& visited, Mat& img,int direction[], Point basePoint, v
 * @param params p_params:...
 * @param score p_score:...
 */
-void score_by_texture(Mat& visited, Mat& img,int direction[], Point basePoint, vector<int> params,float* score);
+//void score_by_texture(Mat& visited, Mat& img,int direction[], Point basePoint, std::vector<int> params,float* score);
 
 #endif
